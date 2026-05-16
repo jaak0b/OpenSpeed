@@ -33,12 +33,6 @@ uint32_t lastRandomId = 0;
 int startSensor = 0; // either 1 or 2 for sensor 1 or 2.
 int endSensor = 0;   // either 1 or 2 for sensor 1 or 2.
 
-String stateToString() {
-  return (systemState == WAITING_FOR_MEASUREMENT)
-         ? "waitingForMeasurement"
-         : "measuring";
-}
-
 void setup() {
   Serial.begin(115200);
 
@@ -57,7 +51,7 @@ void setup() {
   randomSeed(esp_random());
 
   server.on("/status", HTTP_GET, [](AsyncWebServerRequest *request){
-    String json = "{ \"status\": \"" + stateToString() + "\" }";
+    String json = "{ \"status\": \"" + String(static_cast<int>(systemState)) + "\" }";
     request->send(200, "application/json", json);
   });
 
