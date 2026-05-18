@@ -10,7 +10,7 @@ const char* WIFI_PASS = "PASSWORD";
 const int SENSOR1_PIN = 6;
 const int SENSOR2_PIN = 7;
 
-const float SENSOR_DISTANCE_M = 0.49f; // Distance in meters
+const float SENSOR_DISTANCE_M = 0.49f;  // Distance in meters
 
 AsyncWebServer server(80);
 
@@ -23,15 +23,19 @@ enum SystemState {
 SystemState systemState = WAITING_FOR_MEASUREMENT;
 
 unsigned long startTime = 0;
-unsigned long endTime = 0;
+unsigned long endTimeFront = 0;
+unsigned long endTimeBack = 0;
+unsigned long endSensorReleaseCandidate = 0;
+int sensorLowCheck = 0;
 
-unsigned long lastActiveEndSensor = 0;
+uint32_t id = 0;
+float speed_kmh = 0;
+float train_length_cm = 0;
+
+int startSensor = 0;  // either 1 or 2 for sensor 1 or 2.
+int endSensor = 0;    // either 1 or 2 for sensor 1 or 2.
+
 bool endSensorWasActive = false;
-
-uint32_t lastRandomId = 0;
-
-int startSensor = 0; // either 1 or 2 for sensor 1 or 2.
-int endSensor = 0;   // either 1 or 2 for sensor 1 or 2.
 
 void setup() {
   Serial.begin(115200);
@@ -50,55 +54,46 @@ void setup() {
 
   randomSeed(esp_random());
 
-  server.on("/status", HTTP_GET, [](AsyncWebServerRequest *request){
-    String json = "{ \"status\": \"" + String(static_cast<int>(systemState)) + "\" }";
+  server.on("/status", HTTP_GET, [](AsyncWebServerRequest *request) {
+    String json = "{ \"status\": " + String(static_cast<int>(systemState)) + " }";
     request->send(200, "application/json", json);
   });
 
-  server.on("/result", HTTP_GET, [](AsyncWebServerRequest *request){
-    
-    unsigned long duration = 0;
-    float seconds = 0;
-    float speed_kmh = 0;
-
-    if (lastRandomId != 0) {
-      duration = endTime - startTime;
-      seconds = duration / 1000.0f;
-      speed_kmh = (SENSOR_DISTANCE_M / seconds) * 3.6f;
-      }
-
+  server.on("/result", HTTP_GET, [](AsyncWebServerRequest *request) {
     String json = "{";
-    json += "\"id\":" + String(lastRandomId) + ",";
-    json += "\"duration_ms\":" + String(duration) + ",";
-    json += "\"speed_kmh\":" + String(speed_kmh, 3) + ",";
-    json += "\"timestamp\":" + String(millis());
+    json += "\"id\":" + String(id) + ",";
+    json += "\"train_length_cm\":" + String(train_length_cm) + ",";
+    json += "\"speed_kmh\":" + String(speed_kmh, 3);
     json += "}";
 
     request->send(200, "application/json", json);
   });
 
-  server.on("/reset", HTTP_GET, [](AsyncWebServerRequest *request){
+  server.on("/reset", HTTP_GET, [](AsyncWebServerRequest *request) {
     systemState = WAITING_FOR_MEASUREMENT;
     startTime = 0;
-    endTime = 0;
-    lastActiveEndSensor = 0;
+    endTimeFront = 0;
+    endTimeBack = 0;
+    endSensorReleaseCandidate = 0;
     endSensorWasActive = false;
-    lastRandomId = 0;
+    id = 0;
+    speed_kmh = 0;
+    train_length_cm = 0;
     startSensor = 0;
     endSensor = 0;
-
+    sensorLowCheck = 0;
     request->send(200, "application/json", "{\"status\":\"reset\"}");
-    Serial.println("System reset to waitingForMeasurement");
+    Serial.println("System reset requested");
   });
 
   server.begin();
 }
 
 void loop() {
-  int s1 = digitalRead(SENSOR1_PIN);
-  int s2 = digitalRead(SENSOR2_PIN);
 
   if (systemState == WAITING_FOR_MEASUREMENT) {
+    int s1 = digitalRead(SENSOR1_PIN);
+    int s2 = digitalRead(SENSOR2_PIN);
     if (s1 == LOW || s2 == LOW) {
       if (s1 == LOW) {
         startSensor = 1;
@@ -110,30 +105,53 @@ void loop() {
 
       systemState = MEASURING;
       startTime = millis();
+      endTimeFront = 0;
+      endTimeBack = 0;
+      endSensorReleaseCandidate = 0;
       endSensorWasActive = false;
-      lastActiveEndSensor = millis();
 
-      Serial.print("Measurement started by sensor ");
-      Serial.println(startSensor);
+      Serial.println("Measurement started by sensor " + String(startSensor));
     }
   }
 
   if (systemState == MEASURING) {
     int endSensorPin = (endSensor == 1 ? SENSOR1_PIN : SENSOR2_PIN);
 
-    if (digitalRead(endSensorPin) == LOW) {
+    if (!endSensorWasActive && digitalRead(endSensorPin) == LOW) {
       endSensorWasActive = true;
-      lastActiveEndSensor = millis();
-    }
+      endTimeFront = millis();
+      sensorLowCheck = 0;
+      Serial.println("Sensor " + String(endSensor) + " activated after " + String(endTimeFront / 1000) + " seconds");
+    } else if (endSensorWasActive) {
+      if (digitalRead(endSensorPin) == LOW) {
+        endSensorReleaseCandidate = 0;
+        endTimeBack = 0;
+        return;
+      } else {
+        if (endTimeBack == 0)
+          endTimeBack = millis();
+        if (endSensorReleaseCandidate == 0)
+          endSensorReleaseCandidate = micros();
+        else if (micros() - endSensorReleaseCandidate >= 1000000) {
+          unsigned long duration = endTimeFront - startTime;
+          float seconds = duration / 1000.0f;
 
-    if (endSensorWasActive && (millis() - lastActiveEndSensor > 100)) {
-      endTime = lastActiveEndSensor;
-      lastRandomId = esp_random();
+          id = esp_random();
+          speed_kmh = (SENSOR_DISTANCE_M / seconds) * 3.6f;
+          systemState = WAITING_FOR_MEASUREMENT;
 
-      Serial.print("Measurement finished. New ID: ");
-      Serial.println(lastRandomId);
+          unsigned long totalDuration = endTimeBack - endTimeFront;
+          float totalSeconds = totalDuration / 1000.0f;
+          float speed_m_s = (SENSOR_DISTANCE_M / seconds);
+          float train_length_m = speed_m_s * totalSeconds;
+          train_length_cm = train_length_m * 100.0f;
 
-      systemState = WAITING_FOR_MEASUREMENT;
+          endSensorReleaseCandidate = 0;
+          Serial.println("Measurement finished with id " + String(id));
+          Serial.println("Speed: " + String(speed_kmh, 3) + " km/h");
+          Serial.println("Train length: " + String(train_length_cm, 3) + " cm");
+        }
+      }
     }
   }
 }
