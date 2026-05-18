@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Autofac" Version="9.1.0" />
+      <PackageReference Include="Autofac.Extras.CommonServiceLocator" Version="6.1.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\OpenSpeed.Adapter\OpenSpeed.Adapter.csproj" />
+      <ProjectReference Include="..\OpenSpeed.Core\OpenSpeed.Core.csproj" />
+    </ItemGroup>
+
+</Project>

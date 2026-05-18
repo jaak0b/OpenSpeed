@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UseWPF>true</UseWPF>
+        <TargetFramework>net8.0-windows</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Autofac" Version="9.1.0" />
+      <PackageReference Include="Autofac.Extras.CommonServiceLocator" Version="6.1.0" />
+      <PackageReference Include="CalcBinding" Version="2.5.2" />
+      <PackageReference Include="Extended.Wpf.Toolkit" Version="5.0.0" />
+      <PackageReference Include="IPUserControls.Wpf" Version="1.1.0" />
+      <PackageReference Include="OxyPlot.Core" Version="2.2.0" />
+      <PackageReference Include="OxyPlot.Wpf" Version="2.2.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Page Update="View\MainWindow.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\OpenSpeed.Composition\OpenSpeed.Composition.csproj" />
+    </ItemGroup>
+
+</Project>

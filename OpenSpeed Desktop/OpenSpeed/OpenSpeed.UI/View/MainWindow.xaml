@@ -1,0 +1,167 @@
+﻿<Window x:Class="OpenSpeed.UI.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OpenSpeed"
+        xmlns:oxy="http://oxyplot.org/wpf"
+        xmlns:ip="clr-namespace:IPUserControls;assembly=IPUserControls.Wpf"
+        xmlns:viewModel="clr-namespace:OpenSpeed.UI.ViewModel"
+        xmlns:ipUserControls="clr-namespace:IPUserControls;assembly=IPUserControls"
+        xmlns:converter="clr-namespace:OpenSpeed.UI.Converter"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:oxyPlot="clr-namespace:OxyPlot;assembly=OxyPlot"
+        xmlns:series="clr-namespace:OxyPlot.Series;assembly=OxyPlot"
+        xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        xmlns:calcBinding="clr-namespace:CalcBinding;assembly=CalcBinding"
+        xmlns:markupExtensions="clr-namespace:OpenSpeed.UI.MarkupExtensions"
+        xmlns:models="clr-namespace:OpenSpeed.Core.Models;assembly=OpenSpeed.Core"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance viewModel:MainWindowViewModel }"
+        Title="OpenSpeed" Height="450" Width="800" MinHeight="450" MinWidth="800">
+    <Window.Resources>
+        <converter:BoolToConnectionStatusConverter x:Key="BoolToConnectionStatusConverter" />
+        <CollectionViewSource Source="{Binding Steps}" x:Key="StepsViewSource">
+            <CollectionViewSource.SortDescriptions>
+                <componentModel:SortDescription PropertyName="SpeedStep" />
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="AUTO" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="AUTO" />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="AUTO" />
+                <RowDefinition Height="AUTO" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="AUTO" />
+                <ColumnDefinition Width="AUTO" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="AUTO" />
+                <ColumnDefinition Width="AUTO" />
+                <ColumnDefinition Width="AUTO" />
+                <ColumnDefinition Width="AUTO" />
+                <ColumnDefinition Width="AUTO" />
+                <ColumnDefinition Width="AUTO" />
+                <ColumnDefinition Width="AUTO" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="AUTO" />
+            </Grid.ColumnDefinitions>
+
+            <Label Content="Z21 Adresse:" Grid.Row="0" Grid.Column="0" VerticalContentAlignment="Center" />
+            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+                <ipUserControls:IpField IpAddress="{Binding EndPointConfiguration.Z21IpAddress}"
+                                        VerticalContentAlignment="Center"
+                                        IsEnabled="{calcBinding:Binding !MeasurementInProgress}" />
+                <ipUserControls:IpStatus
+                    ConnectionStatus="{Binding Z21Connected, Converter={StaticResource BoolToConnectionStatusConverter}}"
+                    VerticalContentAlignment="Center" />
+            </StackPanel>
+
+            <Label Content="Speed Sensor Adresse:" Grid.Row="1" Grid.Column="0" VerticalContentAlignment="Center" />
+            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
+                <ipUserControls:IpField IpAddress="{Binding EndPointConfiguration.SpeedSensorIpAddress}"
+                                        VerticalContentAlignment="Center"
+                                        IsEnabled="{calcBinding:Binding !MeasurementInProgress}" />
+                <ipUserControls:IpStatus
+                    ConnectionStatus="{Binding SpeedSensorConnected, Converter={StaticResource BoolToConnectionStatusConverter}}"
+                    VerticalContentAlignment="Center" />
+            </StackPanel>
+
+            <Label Content="Decoder Address:" Grid.Row="0" Grid.Column="2" VerticalContentAlignment="Center" />
+            <xctk:IntegerUpDown Grid.Row="0" Grid.Column="3" Value="{Binding  LocomotiveConfiguration.DecoderAddress}"
+                                Margin="2"
+                                Padding="5" VerticalContentAlignment="Center"
+                                IsEnabled="{calcBinding:Binding !MeasurementInProgress}" />
+
+            <Label Content="Dcc Speed :" Grid.Row="1" Grid.Column="2" VerticalContentAlignment="Center" />
+            <ComboBox Grid.Row="1" Grid.Column="3"
+                      ItemsSource="{markupExtensions:EnumValues EnumType=models:DccSpeedMode}"
+                      SelectedItem="{Binding  LocomotiveConfiguration.DccSpeedMode}"
+                      HorizontalContentAlignment="Center"
+                      VerticalContentAlignment="Center" Padding="2" Margin="2"
+                      IsEnabled="{calcBinding:Binding !MeasurementInProgress}" />
+
+
+            <Label Content="Scale:" Grid.Row="1" Grid.Column="4" VerticalContentAlignment="Center" />
+            <xctk:IntegerUpDown Grid.Row="1" Grid.Column="5"
+                                Value="{Binding  LocomotiveConfiguration.LocomotiveScale}"
+                                Margin="2" Padding="5" VerticalContentAlignment="Center"
+                                IsEnabled="{calcBinding:Binding !MeasurementInProgress}" />
+
+            <Label Content="Max Speed:" Grid.Row="0" Grid.Column="4" VerticalContentAlignment="Center" />
+            <StackPanel Grid.Row="0" Grid.Column="5" Orientation="Horizontal">
+                <xctk:IntegerUpDown
+                    Value="{Binding  MeasurementConfiguration.MaxSpeed}"
+                    Margin="2" Padding="5" VerticalContentAlignment="Center"
+                    IsEnabled="{calcBinding:Binding !MeasurementInProgress}" />
+                <Label Content="km/h" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></Label>
+            </StackPanel>
+
+            <Label Content="Scale:" Grid.Row="1" Grid.Column="4" VerticalContentAlignment="Center" />
+            <xctk:IntegerUpDown Grid.Row="1" Grid.Column="5"
+                                Value="{Binding  LocomotiveConfiguration.LocomotiveScale}"
+                                Margin="2" Padding="5" VerticalContentAlignment="Center"
+                                IsEnabled="{calcBinding:Binding !MeasurementInProgress}" />
+
+            <Label Content="Speed Step Interval:" Grid.Row="0" Grid.Column="6" VerticalContentAlignment="Center" />
+            <xctk:IntegerUpDown Grid.Row="0" Grid.Column="7"
+                                Value="{Binding  MeasurementConfiguration.SpeedStepInterval}"
+                                Margin="2" Padding="5" VerticalContentAlignment="Center"
+                                IsEnabled="{calcBinding:Binding !MeasurementInProgress}" />
+
+            <Label Content="Starting Speed Step:" Grid.Row="1" Grid.Column="6" VerticalContentAlignment="Center" />
+            <xctk:IntegerUpDown Grid.Row="1" Grid.Column="7"
+                                Value="{Binding  MeasurementConfiguration.StartingSpeedStep}"
+                                Margin="2" Padding="5" VerticalContentAlignment="Center"
+                                IsEnabled="{calcBinding:Binding !MeasurementInProgress}" />
+        </Grid>
+
+        <DataGrid Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"
+                  ItemsSource="{Binding Source={StaticResource StepsViewSource}}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  HorizontalScrollBarVisibility="Auto"
+                  VerticalScrollBarVisibility="Auto"
+                  Margin="5" Padding="2"
+                  EnableRowVirtualization="True"
+                  ScrollViewer.CanContentScroll="True"
+                  VirtualizingPanel.IsVirtualizingWhenGrouping="True"
+                  VirtualizingPanel.VirtualizationMode="Standard"
+                  VirtualizingPanel.IsVirtualizing="True"
+                  IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding  SpeedStep}" Header="Step"></DataGridTextColumn>
+                <DataGridTextColumn Binding="{Binding  ForwardPass}" Header="Forwards"></DataGridTextColumn>
+                <DataGridTextColumn Binding="{Binding BackwardPass}" Header="Backwards"></DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <oxy:PlotView x:Name="Plot" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                      Model="{Binding  PlotViewModel.Plot}">
+        </oxy:PlotView>
+
+        <Button Grid.Row="2" Grid.Column="2" Name="ButtonStartMeasurement" Content="Start Measurement" Margin="5"
+                Padding="5" VerticalContentAlignment="Center" Click="ButtonStartMeasurement_OnClick"
+                Visibility="{calcBinding:Binding !MeasurementInProgress}"
+                IsEnabled="{calcBinding:Binding 'Z21Connected and SpeedSensorConnected'}" />
+
+        <Button Grid.Row="2" Grid.Column="2" Name="ButtonCancelMeasurement" Content="Cancel" Margin="5"
+                Padding="5" VerticalContentAlignment="Center" Click="ButtonCancelMeasurement_OnClick"
+                Visibility="{calcBinding:Binding MeasurementInProgress}" />
+    </Grid>
+</Window>
