@@ -1,5 +1,5 @@
 # OpenSpeed
-OpenSpeed is an open source model train speed measuring system using cheap of the shelfe hardware.
+OpenSpeed is an open source model train speed measuring system using cheap of the shelf hardware.
 
 <img width="909" height="520" alt="image" src="https://github.com/user-attachments/assets/8b870938-3319-46e3-8379-e18b4ce6f565" />
 
