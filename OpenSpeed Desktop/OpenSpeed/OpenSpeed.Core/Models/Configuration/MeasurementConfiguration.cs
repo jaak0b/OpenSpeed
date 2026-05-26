@@ -1,47 +1,38 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using OpenSpeed.Core.Controller;
 
 namespace OpenSpeed.Core.Models.Configuration
 {
 
-  public class MeasurementConfiguration : INotifyPropertyChanged
+  public class MeasurementConfiguration(IKeyValueStore valueStore) : INotifyPropertyChanged
   {
-    private int _speedStepInterval = 5;
-    private int _startingSpeedStep = 4;
-    private int _maxSpeed;
-
     public int SpeedStepInterval
     {
-      get => _speedStepInterval;
+      get => valueStore.GetValue(nameof(SpeedStepInterval), 1);
       set
       {
-        if (value == _speedStepInterval)
-          return;
-        _speedStepInterval = value;
+        valueStore.SetValue(nameof(SpeedStepInterval), value);
         OnPropertyChanged();
       }
     }
 
     public int StartingSpeedStep
     {
-      get => _startingSpeedStep;
+      get => valueStore.GetValue(nameof(StartingSpeedStep), 1);
       set
       {
-        if (value == _startingSpeedStep)
-          return;
-        _startingSpeedStep = value;
+        valueStore.SetValue(nameof(StartingSpeedStep), value);
         OnPropertyChanged();
       }
     }
 
     public int MaxSpeed
     {
-      get => _maxSpeed;
+      get => valueStore.GetValue<int>(nameof(MaxSpeed));
       set
       {
-        if (value == _maxSpeed)
-          return;
-        _maxSpeed = value;
+        valueStore.SetValue(nameof(MaxSpeed), value);
         OnPropertyChanged();
       }
     }
@@ -50,7 +41,7 @@ namespace OpenSpeed.Core.Models.Configuration
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+      PropertyChanged?.Invoke(this, new (propertyName));
     }
   }
 }

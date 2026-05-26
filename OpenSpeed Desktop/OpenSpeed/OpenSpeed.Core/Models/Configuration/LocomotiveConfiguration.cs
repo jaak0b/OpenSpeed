@@ -1,50 +1,40 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using OpenSpeed.Core.Controller;
 
 namespace OpenSpeed.Core.Models.Configuration
 {
-  public class LocomotiveConfiguration : INotifyPropertyChanged
+  public class LocomotiveConfiguration(IKeyValueStore valueStore) : INotifyPropertyChanged
   {
-    private int _decoderAddress = 17;
-    private DccSpeedMode _dccSpeedMode = DccSpeedMode.Steps128;
-    private int _locomotiveScale = 87;
-
     public event PropertyChangedEventHandler? PropertyChanged;
-    
+
     public int LocomotiveScale
     {
-      get => _locomotiveScale;
+      get => valueStore.GetValue(nameof(LocomotiveScale), 87);
       set
       {
-        if (value == _locomotiveScale)
-          return;
-        _locomotiveScale = value;
+        valueStore.SetValue(nameof(LocomotiveScale), value);
         OnPropertyChanged();
       }
     }
 
-    
+
     public int DecoderAddress
     {
-      get => _decoderAddress;
+      get => valueStore.GetValue<int>(nameof(DecoderAddress));
       set
       {
-        if (value == _decoderAddress)
-          return;
-        _decoderAddress = value;
+        valueStore.SetValue(nameof(DecoderAddress), value);
         OnPropertyChanged();
       }
     }
 
     public DccSpeedMode DccSpeedMode
     {
-      get => _dccSpeedMode;
+      get => valueStore.GetValue(nameof(DccSpeedMode), DccSpeedMode.Steps128);
       set
       {
-        if (value == _dccSpeedMode)
-          return;
-
-        _dccSpeedMode = value;
+        valueStore.SetValue(nameof(DccSpeedMode), value);
         OnPropertyChanged();
       }
     }

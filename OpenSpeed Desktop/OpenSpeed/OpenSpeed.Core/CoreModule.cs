@@ -18,6 +18,14 @@ namespace OpenSpeed.Core
       builder.RegisterType<EndPointConfiguration>().AsSelf().SingleInstance();
       builder.RegisterType<LocomotiveConfiguration>().AsSelf().SingleInstance();
       builder.RegisterType<MeasurementConfiguration>().AsSelf().SingleInstance();
+
+      builder.Register(ctx =>
+                       {
+                         var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "OpenSpeed");
+                         return new JsonKeyValueStore(path);
+                       })
+             .As<IKeyValueStore>()
+             .SingleInstance();
     }
   }
 }
