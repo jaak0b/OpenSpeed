@@ -85,7 +85,7 @@
             <xctk:IntegerUpDown Grid.Row="0" Grid.Column="3" Value="{Binding  LocomotiveConfiguration.DecoderAddress}"
                                 Margin="2"
                                 Padding="5" VerticalContentAlignment="Center"
-                                IsEnabled="{calcBinding:Binding !MeasurementInProgress}" />
+                                IsEnabled="{calcBinding:Binding !MeasurementInProgress}" Minimum="0" />
 
             <Label Content="Dcc Speed :" Grid.Row="1" Grid.Column="2" VerticalContentAlignment="Center" />
             <ComboBox Grid.Row="1" Grid.Column="3"
@@ -107,7 +107,8 @@
                 <xctk:IntegerUpDown
                     Value="{Binding  MeasurementConfiguration.MaxSpeed}"
                     Margin="2" Padding="5" VerticalContentAlignment="Center"
-                    IsEnabled="{calcBinding:Binding !MeasurementInProgress}" />
+                    IsEnabled="{calcBinding:Binding !MeasurementInProgress}" 
+                    Minimum="1"/>
                 <Label Content="km/h" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></Label>
             </StackPanel>
 
@@ -115,19 +116,22 @@
             <xctk:IntegerUpDown Grid.Row="1" Grid.Column="5"
                                 Value="{Binding  LocomotiveConfiguration.LocomotiveScale}"
                                 Margin="2" Padding="5" VerticalContentAlignment="Center"
-                                IsEnabled="{calcBinding:Binding !MeasurementInProgress}" />
+                                IsEnabled="{calcBinding:Binding !MeasurementInProgress}" 
+                                Minimum="1"/>
 
             <Label Content="Speed Step Interval:" Grid.Row="0" Grid.Column="6" VerticalContentAlignment="Center" />
             <xctk:IntegerUpDown Grid.Row="0" Grid.Column="7"
                                 Value="{Binding  MeasurementConfiguration.SpeedStepInterval}"
                                 Margin="2" Padding="5" VerticalContentAlignment="Center"
-                                IsEnabled="{calcBinding:Binding !MeasurementInProgress}" />
+                                IsEnabled="{calcBinding:Binding !MeasurementInProgress}"
+                                Minimum="1"/>
 
             <Label Content="Starting Speed Step:" Grid.Row="1" Grid.Column="6" VerticalContentAlignment="Center" />
             <xctk:IntegerUpDown Grid.Row="1" Grid.Column="7"
                                 Value="{Binding  MeasurementConfiguration.StartingSpeedStep}"
                                 Margin="2" Padding="5" VerticalContentAlignment="Center"
-                                IsEnabled="{calcBinding:Binding !MeasurementInProgress}" />
+                                IsEnabled="{calcBinding:Binding !MeasurementInProgress}"
+                                Minimum="1"/>
         </Grid>
 
         <DataGrid Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"
