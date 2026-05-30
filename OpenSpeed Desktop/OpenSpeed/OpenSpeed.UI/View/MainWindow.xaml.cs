@@ -20,4 +20,8 @@ public partial class MainWindow : Window
   private async void ButtonStartMeasurement_OnClick(object sender, RoutedEventArgs e) => await MainWindowViewModel.StartMeasurement();
 
   private async void ButtonCancelMeasurement_OnClick(object sender, RoutedEventArgs e) => await MainWindowViewModel.CancelMeasurement();
+
+  private async void ButtonStartLengthMeasurement_OnClick(object sender, RoutedEventArgs e) => await MainWindowViewModel.StartLengthMeasurement();
+
+  private async void ButtonCancelLengthMeasurement_OnClick(object sender, RoutedEventArgs e) => await MainWindowViewModel.CancelLengthMeasurement();
 }

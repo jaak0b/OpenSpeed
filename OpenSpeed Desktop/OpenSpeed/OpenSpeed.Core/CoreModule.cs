@@ -12,12 +12,15 @@ namespace OpenSpeed.Core
       builder.RegisterType<SpeedStepMeasurementProvider>().As<ISpeedStepMeasurementProvider>().SingleInstance();
       builder.RegisterType<MeasurementController>().As<IMeasurementController>().SingleInstance();
       builder.RegisterType<SpeedStepMeasurementController>().As<ISpeedStepMeasurementController>().SingleInstance();
+      builder.RegisterType<LengthMeasurementController>().As<ILengthMeasurementController>().SingleInstance();
 
       builder.RegisterType<DelayProvider>().As<IDelayProvider>().SingleInstance();
 
       builder.RegisterType<EndPointConfiguration>().AsSelf().SingleInstance();
       builder.RegisterType<LocomotiveConfiguration>().AsSelf().SingleInstance();
       builder.RegisterType<MeasurementConfiguration>().AsSelf().SingleInstance();
+      builder.RegisterType<LengthMeasurementConfiguration>().AsSelf().SingleInstance();
+      builder.RegisterType<AppConfiguration>().AsSelf().SingleInstance();
 
       builder.Register(ctx =>
                        {

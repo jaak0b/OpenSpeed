@@ -7,18 +7,24 @@ using OpenSpeed.Core.Helper;
 using OpenSpeed.Core.Interfaces;
 using OpenSpeed.Core.Models;
 using OpenSpeed.Core.Models.Configuration;
+using OpenSpeed.UI.Localization;
 
 namespace OpenSpeed.UI.ViewModel
 {
   public class MainWindowViewModel : INotifyPropertyChanged
   {
     private readonly IMeasurementController _measurementController;
+    private readonly ILengthMeasurementController _lengthMeasurementController;
     private readonly IZ21Controller _z21Controller;
+    private readonly AppConfiguration _appConfiguration;
+    private readonly LocalizationManager _localization;
     private ReachabilityMonitor _z21ReachabilityMonitor;
     private ReachabilityMonitor _speedSensorReachabilityMonitor;
     private bool _speedSensorConnected;
     private bool _z21Connected;
     private bool _measurementInProgress;
+    private bool _lengthMeasurementInProgress;
+    private double? _trainLengthCm;
     private CancellationTokenSource? _cancellationTokenSource;
 
     public SpeedPlotViewModel PlotViewModel { get; }
@@ -29,18 +35,39 @@ namespace OpenSpeed.UI.ViewModel
 
     public LocomotiveConfiguration LocomotiveConfiguration { get; }
 
+    public LengthMeasurementConfiguration LengthMeasurementConfiguration { get; }
+
+    public Language SelectedLanguage
+    {
+      get => _appConfiguration.Language;
+      set
+      {
+        if (value == _appConfiguration.Language)
+          return;
+        _appConfiguration.Language = value;
+        _localization.SetLanguage(value);
+        OnPropertyChanged();
+      }
+    }
+
     public ObservableCollection<SpeedStepMeasurement> Steps { get; } = [];
 
     public MainWindowViewModel(IMeasurementController measurementController, SpeedPlotViewModel plotViewModel, MeasurementConfiguration measurementConfiguration, EndPointConfiguration endPointConfiguration,
-                               LocomotiveConfiguration locomotiveConfiguration, IZ21Controller z21Controller)
+                               LocomotiveConfiguration locomotiveConfiguration, IZ21Controller z21Controller,
+                               ILengthMeasurementController lengthMeasurementController, LengthMeasurementConfiguration lengthMeasurementConfiguration,
+                               AppConfiguration appConfiguration, LocalizationManager localization)
     {
       PlotViewModel = plotViewModel;
       MeasurementConfiguration = measurementConfiguration;
       EndPointConfiguration = endPointConfiguration;
       LocomotiveConfiguration = locomotiveConfiguration;
+      LengthMeasurementConfiguration = lengthMeasurementConfiguration;
 
       _measurementController = measurementController;
+      _lengthMeasurementController = lengthMeasurementController;
       _z21Controller = z21Controller;
+      _appConfiguration = appConfiguration;
+      _localization = localization;
       _measurementController.OnSpeedStepMeasured += (_, args) => Application.Current.Dispatcher.BeginInvoke(() => Steps.Add(args.Measurement));
       _z21ReachabilityMonitor = new(() => EndPointConfiguration.Z21IpAddress, b => Z21Connected = b);
       _speedSensorReachabilityMonitor = new(() => EndPointConfiguration.SpeedSensorIpAddress, b => SpeedSensorConnected = b);
@@ -55,8 +82,37 @@ namespace OpenSpeed.UI.ViewModel
           return;
         _measurementInProgress = value;
         OnPropertyChanged();
+        OnPropertyChanged(nameof(AnyMeasurementInProgress));
       }
     }
+
+    public bool LengthMeasurementInProgress
+    {
+      get => _lengthMeasurementInProgress;
+      set
+      {
+        if (value == _lengthMeasurementInProgress)
+          return;
+        _lengthMeasurementInProgress = value;
+        OnPropertyChanged();
+        OnPropertyChanged(nameof(AnyMeasurementInProgress));
+      }
+    }
+
+    public bool AnyMeasurementInProgress => MeasurementInProgress || LengthMeasurementInProgress;
+
+    public double? TrainLengthCm
+    {
+      get => _trainLengthCm;
+      set
+      {
+        _trainLengthCm = value;
+        OnPropertyChanged();
+        OnPropertyChanged(nameof(TrainLengthDisplay));
+      }
+    }
+
+    public string TrainLengthDisplay => _trainLengthCm.HasValue ? $"{_trainLengthCm.Value:F1} cm" : "—";
 
     public bool Z21Connected
     {
@@ -93,7 +149,7 @@ namespace OpenSpeed.UI.ViewModel
     {
       try
       {
-        var result = MessageBox.Show($"Please set CV3 and CV4 of the locomotive decoder to 0!", "Input required", MessageBoxButton.OKCancel);
+        var result = MessageBox.Show(_localization["MsgSetCv"], _localization["MsgInputRequired"], MessageBoxButton.OKCancel);
         if (result != MessageBoxResult.OK)
           return;
 
@@ -107,7 +163,7 @@ namespace OpenSpeed.UI.ViewModel
       catch (OperationCanceledException) { }
       catch (Exception e)
       {
-        MessageBox.Show(e.Message, "Error", MessageBoxButton.OK);
+        MessageBox.Show(e.Message, _localization["MsgError"], MessageBoxButton.OK);
       } finally
       {
         MeasurementInProgress = false;
@@ -123,10 +179,56 @@ namespace OpenSpeed.UI.ViewModel
       catch (OperationCanceledException) { }
       catch (Exception e)
       {
-        MessageBox.Show(e.Message, "Error", MessageBoxButton.OK);
+        MessageBox.Show(e.Message, _localization["MsgError"], MessageBoxButton.OK);
       } finally
       {
         MeasurementInProgress = false;
+      }
+    }
+
+    public async Task StartLengthMeasurement()
+    {
+      var confirm = MessageBox.Show(
+        _localization["MsgPositionLoco"],
+        _localization["BtnMeasureLength"], MessageBoxButton.OKCancel);
+      if (confirm != MessageBoxResult.OK)
+        return;
+
+      try
+      {
+        LengthMeasurementInProgress = true;
+        TrainLengthCm = null;
+        _cancellationTokenSource = new();
+        _z21Controller.Configure(EndPointConfiguration.Z21IpAddress);
+        TrainLengthCm = await _lengthMeasurementController.MeasureAsync(
+          LocomotiveConfiguration, EndPointConfiguration, LengthMeasurementConfiguration,
+          _cancellationTokenSource.Token);
+      }
+      catch (OperationCanceledException) { }
+      catch (Exception e)
+      {
+        MessageBox.Show(e.Message, _localization["MsgError"], MessageBoxButton.OK);
+      }
+      finally
+      {
+        LengthMeasurementInProgress = false;
+      }
+    }
+
+    public async Task CancelLengthMeasurement()
+    {
+      try
+      {
+        await (_cancellationTokenSource?.CancelAsync() ?? Task.CompletedTask);
+      }
+      catch (OperationCanceledException) { }
+      catch (Exception e)
+      {
+        MessageBox.Show(e.Message, _localization["MsgError"], MessageBoxButton.OK);
+      }
+      finally
+      {
+        LengthMeasurementInProgress = false;
       }
     }
   }

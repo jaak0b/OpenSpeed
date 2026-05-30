@@ -1,4 +1,4 @@
-﻿<Window x:Class="OpenSpeed.UI.View.MainWindow"
+<Window x:Class="OpenSpeed.UI.View.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -17,155 +17,215 @@
         xmlns:markupExtensions="clr-namespace:OpenSpeed.UI.MarkupExtensions"
         xmlns:models="clr-namespace:OpenSpeed.Core.Models;assembly=OpenSpeed.Core"
         mc:Ignorable="d"
-        d:DataContext="{d:DesignInstance viewModel:MainWindowViewModel }"
-        Title="OpenSpeed" Height="450" Width="800" MinHeight="450" MinWidth="800">
+        d:DataContext="{d:DesignInstance viewModel:MainWindowViewModel}"
+        Title="OpenSpeed" Height="660" Width="1050" MinHeight="550" MinWidth="900">
+
     <Window.Resources>
-        <converter:BoolToConnectionStatusConverter x:Key="BoolToConnectionStatusConverter" />
+        <converter:BoolToConnectionStatusConverter x:Key="BoolToConnectionStatusConverter"/>
         <CollectionViewSource Source="{Binding Steps}" x:Key="StepsViewSource">
             <CollectionViewSource.SortDescriptions>
-                <componentModel:SortDescription PropertyName="SpeedStep" />
+                <componentModel:SortDescription PropertyName="SpeedStep"/>
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
     </Window.Resources>
-    <Grid>
+
+    <Grid Background="{StaticResource BackgroundBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="48"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="AUTO" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="AUTO" />
-        </Grid.ColumnDefinitions>
+        <!-- ── Header bar ── -->
+        <Border Grid.Row="0" Background="{StaticResource HeaderBrush}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="AUTO" />
-                <RowDefinition Height="AUTO" />
-            </Grid.RowDefinitions>
+                <TextBlock Grid.Column="0" Text="OpenSpeed" Foreground="White" FontSize="18"
+                           FontWeight="Bold" VerticalAlignment="Center" Margin="16,0"/>
 
+                <StackPanel Grid.Column="1" Orientation="Horizontal"
+                            VerticalAlignment="Center" Margin="0,0,12,0">
+                    <TextBlock Text="{markupExtensions:Loc Language}" Foreground="#CBD5E0"
+                               VerticalAlignment="Center" Margin="0,0,8,0" FontSize="12"/>
+                    <ComboBox Width="120"
+                              ItemsSource="{markupExtensions:EnumValues EnumType=models:Language}"
+                              SelectedItem="{Binding SelectedLanguage}"
+                              Padding="6,3" VerticalContentAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ── Content ── -->
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="AUTO" />
-                <ColumnDefinition Width="AUTO" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="AUTO" />
-                <ColumnDefinition Width="AUTO" />
-                <ColumnDefinition Width="AUTO" />
-                <ColumnDefinition Width="AUTO" />
-                <ColumnDefinition Width="AUTO" />
-                <ColumnDefinition Width="AUTO" />
-                <ColumnDefinition Width="AUTO" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="AUTO" />
+                <ColumnDefinition Width="290"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Label Content="Z21 Adresse:" Grid.Row="0" Grid.Column="0" VerticalContentAlignment="Center" />
-            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
-                <ipUserControls:IpField IpAddress="{Binding EndPointConfiguration.Z21IpAddress}"
-                                        VerticalContentAlignment="Center"
-                                        IsEnabled="{calcBinding:Binding !MeasurementInProgress}" />
-                <ipUserControls:IpStatus
-                    ConnectionStatus="{Binding Z21Connected, Converter={StaticResource BoolToConnectionStatusConverter}}"
-                    VerticalContentAlignment="Center" />
-            </StackPanel>
+            <!-- ── Left sidebar ── -->
+            <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" Padding="0,4,0,0">
+                <StackPanel>
 
-            <Label Content="Speed Sensor Adresse:" Grid.Row="1" Grid.Column="0" VerticalContentAlignment="Center" />
-            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
-                <ipUserControls:IpField IpAddress="{Binding EndPointConfiguration.SpeedSensorIpAddress}"
-                                        VerticalContentAlignment="Center"
-                                        IsEnabled="{calcBinding:Binding !MeasurementInProgress}" />
-                <ipUserControls:IpStatus
-                    ConnectionStatus="{Binding SpeedSensorConnected, Converter={StaticResource BoolToConnectionStatusConverter}}"
-                    VerticalContentAlignment="Center" />
-            </StackPanel>
+                    <!-- CONNECTION -->
+                    <Border Style="{StaticResource CardSection}">
+                        <StackPanel>
+                            <TextBlock Text="{markupExtensions:Loc Connection}" Style="{StaticResource SectionHeader}"/>
 
-            <Label Content="Decoder Address:" Grid.Row="0" Grid.Column="2" VerticalContentAlignment="Center" />
-            <xctk:IntegerUpDown Grid.Row="0" Grid.Column="3" Value="{Binding  LocomotiveConfiguration.DecoderAddress}"
-                                Margin="2"
-                                Padding="5" VerticalContentAlignment="Center"
-                                IsEnabled="{calcBinding:Binding !MeasurementInProgress}" Minimum="0" />
+                            <TextBlock Text="{markupExtensions:Loc Z21Address}" Style="{StaticResource FieldLabel}"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <ipUserControls:IpField Grid.Column="0" HorizontalAlignment="Left"
+                                    IpAddress="{Binding EndPointConfiguration.Z21IpAddress}"
+                                    IsEnabled="{calcBinding:Binding !AnyMeasurementInProgress}"/>
+                                <ipUserControls:IpStatus Grid.Column="1"
+                                    ConnectionStatus="{Binding Z21Connected, Converter={StaticResource BoolToConnectionStatusConverter}}"
+                                    Margin="4,0,0,0" VerticalContentAlignment="Center"/>
+                            </Grid>
 
-            <Label Content="Dcc Speed :" Grid.Row="1" Grid.Column="2" VerticalContentAlignment="Center" />
-            <ComboBox Grid.Row="1" Grid.Column="3"
-                      ItemsSource="{markupExtensions:EnumValues EnumType=models:DccSpeedMode}"
-                      SelectedItem="{Binding  LocomotiveConfiguration.DccSpeedMode}"
-                      HorizontalContentAlignment="Center"
-                      VerticalContentAlignment="Center" Padding="2" Margin="2"
-                      IsEnabled="{calcBinding:Binding !MeasurementInProgress}" />
+                            <TextBlock Text="{markupExtensions:Loc SensorAddress}" Style="{StaticResource FieldLabel}"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <ipUserControls:IpField Grid.Column="0" HorizontalAlignment="Left"
+                                    IpAddress="{Binding EndPointConfiguration.SpeedSensorIpAddress}"
+                                    IsEnabled="{calcBinding:Binding !AnyMeasurementInProgress}"/>
+                                <ipUserControls:IpStatus Grid.Column="1"
+                                    ConnectionStatus="{Binding SpeedSensorConnected, Converter={StaticResource BoolToConnectionStatusConverter}}"
+                                    Margin="4,0,0,0" VerticalContentAlignment="Center"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
 
+                    <!-- LOCOMOTIVE -->
+                    <Border Style="{StaticResource CardSection}">
+                        <StackPanel>
+                            <TextBlock Text="{markupExtensions:Loc Locomotive}" Style="{StaticResource SectionHeader}"/>
 
-            <Label Content="Scale:" Grid.Row="1" Grid.Column="4" VerticalContentAlignment="Center" />
-            <xctk:IntegerUpDown Grid.Row="1" Grid.Column="5"
-                                Value="{Binding  LocomotiveConfiguration.LocomotiveScale}"
-                                Margin="2" Padding="5" VerticalContentAlignment="Center"
-                                IsEnabled="{calcBinding:Binding !MeasurementInProgress}" />
+                            <TextBlock Text="{markupExtensions:Loc DecoderAddress}" Style="{StaticResource FieldLabel}"/>
+                            <xctk:IntegerUpDown Value="{Binding LocomotiveConfiguration.DecoderAddress}"
+                                Minimum="0" Padding="5"
+                                IsEnabled="{calcBinding:Binding !AnyMeasurementInProgress}"/>
 
-            <Label Content="Max Speed:" Grid.Row="0" Grid.Column="4" VerticalContentAlignment="Center" />
-            <StackPanel Grid.Row="0" Grid.Column="5" Orientation="Horizontal">
-                <xctk:IntegerUpDown
-                    Value="{Binding  MeasurementConfiguration.MaxSpeed}"
-                    Margin="2" Padding="5" VerticalContentAlignment="Center"
-                    IsEnabled="{calcBinding:Binding !MeasurementInProgress}" 
-                    Minimum="1"/>
-                <Label Content="km/h" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></Label>
-            </StackPanel>
+                            <TextBlock Text="{markupExtensions:Loc DccSpeedMode}" Style="{StaticResource FieldLabel}"/>
+                            <ComboBox ItemsSource="{markupExtensions:EnumValues EnumType=models:DccSpeedMode}"
+                                      SelectedItem="{Binding LocomotiveConfiguration.DccSpeedMode}"
+                                      Padding="5,4"
+                                      IsEnabled="{calcBinding:Binding !AnyMeasurementInProgress}"/>
 
-            <Label Content="Scale:" Grid.Row="1" Grid.Column="4" VerticalContentAlignment="Center" />
-            <xctk:IntegerUpDown Grid.Row="1" Grid.Column="5"
-                                Value="{Binding  LocomotiveConfiguration.LocomotiveScale}"
-                                Margin="2" Padding="5" VerticalContentAlignment="Center"
-                                IsEnabled="{calcBinding:Binding !MeasurementInProgress}" 
-                                Minimum="1"/>
+                            <TextBlock Text="{markupExtensions:Loc Scale}" Style="{StaticResource FieldLabel}"/>
+                            <xctk:IntegerUpDown Value="{Binding LocomotiveConfiguration.LocomotiveScale}"
+                                Minimum="1" Padding="5"
+                                IsEnabled="{calcBinding:Binding !AnyMeasurementInProgress}"/>
+                        </StackPanel>
+                    </Border>
 
-            <Label Content="Speed Step Interval:" Grid.Row="0" Grid.Column="6" VerticalContentAlignment="Center" />
-            <xctk:IntegerUpDown Grid.Row="0" Grid.Column="7"
-                                Value="{Binding  MeasurementConfiguration.SpeedStepInterval}"
-                                Margin="2" Padding="5" VerticalContentAlignment="Center"
-                                IsEnabled="{calcBinding:Binding !MeasurementInProgress}"
-                                Minimum="1"/>
+                    <!-- ── Speed / Length tabs ── -->
+                    <TabControl Margin="8,4">
 
-            <Label Content="Starting Speed Step:" Grid.Row="1" Grid.Column="6" VerticalContentAlignment="Center" />
-            <xctk:IntegerUpDown Grid.Row="1" Grid.Column="7"
-                                Value="{Binding  MeasurementConfiguration.StartingSpeedStep}"
-                                Margin="2" Padding="5" VerticalContentAlignment="Center"
-                                IsEnabled="{calcBinding:Binding !MeasurementInProgress}"
-                                Minimum="1"/>
+                        <!-- Speed tab -->
+                        <TabItem Header="{markupExtensions:Loc TabSpeed}">
+                            <Border Style="{StaticResource CardSection}" Margin="0,8,0,4">
+                                <StackPanel>
+                                    <TextBlock Text="{markupExtensions:Loc MaxSpeed}" Style="{StaticResource FieldLabel}"/>
+                                    <xctk:IntegerUpDown Value="{Binding MeasurementConfiguration.MaxSpeed}"
+                                        Minimum="1" Padding="5"
+                                        IsEnabled="{calcBinding:Binding !AnyMeasurementInProgress}"/>
+
+                                    <TextBlock Text="{markupExtensions:Loc SpeedStepInterval}" Style="{StaticResource FieldLabel}"/>
+                                    <xctk:IntegerUpDown Value="{Binding MeasurementConfiguration.SpeedStepInterval}"
+                                        Minimum="1" Padding="5"
+                                        IsEnabled="{calcBinding:Binding !AnyMeasurementInProgress}"/>
+
+                                    <TextBlock Text="{markupExtensions:Loc StartingSpeedStep}" Style="{StaticResource FieldLabel}"/>
+                                    <xctk:IntegerUpDown Value="{Binding MeasurementConfiguration.StartingSpeedStep}"
+                                        Minimum="1" Padding="5"
+                                        IsEnabled="{calcBinding:Binding !AnyMeasurementInProgress}"/>
+
+                                    <TextBlock Text="{markupExtensions:Loc Results}" Style="{StaticResource SectionHeader}" Margin="0,12,0,8"/>
+                                    <DataGrid ItemsSource="{Binding Source={StaticResource StepsViewSource}}"
+                                              AutoGenerateColumns="False"
+                                              CanUserAddRows="False" CanUserDeleteRows="False"
+                                              IsReadOnly="True" MaxHeight="200"
+                                              HorizontalScrollBarVisibility="Auto"
+                                              VerticalScrollBarVisibility="Auto"
+                                              EnableRowVirtualization="True"
+                                              ScrollViewer.CanContentScroll="True"
+                                              VirtualizingPanel.IsVirtualizing="True"
+                                              VirtualizingPanel.VirtualizationMode="Standard"
+                                              VirtualizingPanel.IsVirtualizingWhenGrouping="True">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Binding="{Binding SpeedStep}"    Header="{markupExtensions:Loc ColStep}"     Width="*"/>
+                                            <DataGridTextColumn Binding="{Binding ForwardPass}"  Header="{markupExtensions:Loc ColForward}"  Width="*"/>
+                                            <DataGridTextColumn Binding="{Binding BackwardPass}" Header="{markupExtensions:Loc ColBackward}" Width="*"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+
+                                    <Button Name="ButtonStartMeasurement"
+                                            Content="{markupExtensions:Loc BtnStartSpeed}" Margin="0,12,0,0"
+                                            Style="{StaticResource PrimaryButton}"
+                                            Click="ButtonStartMeasurement_OnClick"
+                                            Visibility="{calcBinding:Binding !MeasurementInProgress}"
+                                            IsEnabled="{calcBinding:Binding 'Z21Connected and SpeedSensorConnected'}"/>
+                                    <Button Name="ButtonCancelMeasurement"
+                                            Content="{markupExtensions:Loc BtnCancel}" Margin="0,12,0,0"
+                                            Style="{StaticResource DangerButton}"
+                                            Click="ButtonCancelMeasurement_OnClick"
+                                            Visibility="{calcBinding:Binding MeasurementInProgress}"/>
+                                </StackPanel>
+                            </Border>
+                        </TabItem>
+
+                        <!-- Length tab -->
+                        <TabItem Header="{markupExtensions:Loc TabLength}">
+                            <Border Style="{StaticResource CardSection}" Margin="0,8,0,4">
+                                <StackPanel>
+                                    <TextBlock Text="{markupExtensions:Loc SpeedStep}" Style="{StaticResource FieldLabel}"/>
+                                    <xctk:IntegerUpDown Value="{Binding LengthMeasurementConfiguration.SpeedStep}"
+                                        Minimum="1" Padding="5"
+                                        IsEnabled="{calcBinding:Binding !AnyMeasurementInProgress}"/>
+
+                                    <Border Margin="0,12,0,0" Padding="10,8" CornerRadius="6"
+                                            Background="#F0FFF4" BorderBrush="#C6F6D5" BorderThickness="1">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{markupExtensions:Loc LengthLabel}" Foreground="#276749" FontWeight="SemiBold"/>
+                                            <TextBlock Text="{Binding TrainLengthDisplay}"
+                                                       Foreground="#276749" FontWeight="Bold" FontSize="15"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Button Name="ButtonStartLengthMeasurement"
+                                            Content="{markupExtensions:Loc BtnMeasureLength}" Margin="0,12,0,0"
+                                            Style="{StaticResource GreenButton}"
+                                            Click="ButtonStartLengthMeasurement_OnClick"
+                                            Visibility="{calcBinding:Binding !LengthMeasurementInProgress}"
+                                            IsEnabled="{calcBinding:Binding 'Z21Connected and SpeedSensorConnected and !MeasurementInProgress'}"/>
+                                    <Button Name="ButtonCancelLengthMeasurement"
+                                            Content="{markupExtensions:Loc BtnCancelLength}" Margin="0,12,0,0"
+                                            Style="{StaticResource DangerButton}"
+                                            Click="ButtonCancelLengthMeasurement_OnClick"
+                                            Visibility="{calcBinding:Binding LengthMeasurementInProgress}"/>
+                                </StackPanel>
+                            </Border>
+                        </TabItem>
+                    </TabControl>
+
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- ── Plot area ── -->
+            <Border Grid.Column="1" Margin="8" Background="White" CornerRadius="8"
+                    Effect="{StaticResource CardShadow}">
+                <oxy:PlotView x:Name="Plot" Model="{Binding PlotViewModel.Plot}"/>
+            </Border>
+
         </Grid>
-
-        <DataGrid Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"
-                  ItemsSource="{Binding Source={StaticResource StepsViewSource}}"
-                  AutoGenerateColumns="False"
-                  CanUserAddRows="False"
-                  CanUserDeleteRows="False"
-                  HorizontalScrollBarVisibility="Auto"
-                  VerticalScrollBarVisibility="Auto"
-                  Margin="5" Padding="2"
-                  EnableRowVirtualization="True"
-                  ScrollViewer.CanContentScroll="True"
-                  VirtualizingPanel.IsVirtualizingWhenGrouping="True"
-                  VirtualizingPanel.VirtualizationMode="Standard"
-                  VirtualizingPanel.IsVirtualizing="True"
-                  IsReadOnly="True">
-            <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding  SpeedStep}" Header="Step"></DataGridTextColumn>
-                <DataGridTextColumn Binding="{Binding  ForwardPass}" Header="Forwards"></DataGridTextColumn>
-                <DataGridTextColumn Binding="{Binding BackwardPass}" Header="Backwards"></DataGridTextColumn>
-            </DataGrid.Columns>
-        </DataGrid>
-
-        <oxy:PlotView x:Name="Plot" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
-                      Model="{Binding  PlotViewModel.Plot}">
-        </oxy:PlotView>
-
-        <Button Grid.Row="2" Grid.Column="2" Name="ButtonStartMeasurement" Content="Start Measurement" Margin="5"
-                Padding="5" VerticalContentAlignment="Center" Click="ButtonStartMeasurement_OnClick"
-                Visibility="{calcBinding:Binding !MeasurementInProgress}"
-                IsEnabled="{calcBinding:Binding 'Z21Connected and SpeedSensorConnected'}" />
-
-        <Button Grid.Row="2" Grid.Column="2" Name="ButtonCancelMeasurement" Content="Cancel" Margin="5"
-                Padding="5" VerticalContentAlignment="Center" Click="ButtonCancelMeasurement_OnClick"
-                Visibility="{calcBinding:Binding MeasurementInProgress}" />
     </Grid>
 </Window>

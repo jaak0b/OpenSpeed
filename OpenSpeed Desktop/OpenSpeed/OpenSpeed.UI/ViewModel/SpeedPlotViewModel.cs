@@ -1,5 +1,6 @@
-﻿using OpenSpeed.Core.Controller;
+using OpenSpeed.Core.Controller;
 using OpenSpeed.Core.EventArgs;
+using OpenSpeed.UI.Localization;
 using OxyPlot;
 using OxyPlot.Series;
 
@@ -7,27 +8,41 @@ namespace OpenSpeed.UI.ViewModel
 {
   public class SpeedPlotViewModel
   {
-    public PlotModel Plot { get; } = new() { Title = "Speeds" };
+    private readonly LocalizationManager _localization;
+
+    public PlotModel Plot { get; } = new();
 
     public LineSeries DirectionForwards { get; } = new()
                                                    {
-                                                     Title = "Speed Forwards",
                                                      MarkerType = MarkerType.Circle,
                                                      MarkerSize = 3
                                                    };
 
     public LineSeries DirectionBackwards { get; } = new()
                                                     {
-                                                      Title = "Speed Backwards",
                                                       MarkerType = MarkerType.Circle,
                                                       MarkerSize = 3
                                                     };
 
-    public SpeedPlotViewModel(IMeasurementController measurementController)
+    public SpeedPlotViewModel(IMeasurementController measurementController, LocalizationManager localization)
     {
+      _localization = localization;
+      ApplyTitles();
       Plot.Series.Add(DirectionForwards);
       Plot.Series.Add(DirectionBackwards);
       measurementController.OnSpeedStepMeasured += MeasurementController_OnOnSpeedStepMeasured;
+      _localization.LanguageChanged += (_, _) =>
+                                       {
+                                         ApplyTitles();
+                                         Plot.InvalidatePlot(false);
+                                       };
+    }
+
+    private void ApplyTitles()
+    {
+      Plot.Title = _localization["PlotTitle"];
+      DirectionForwards.Title = _localization["PlotForward"];
+      DirectionBackwards.Title = _localization["PlotBackward"];
     }
 
     private void MeasurementController_OnOnSpeedStepMeasured(object? sender, SpeedStepMeasurementEventArgs args)
