@@ -16,9 +16,17 @@
         xmlns:calcBinding="clr-namespace:CalcBinding;assembly=CalcBinding"
         xmlns:markupExtensions="clr-namespace:OpenSpeed.UI.MarkupExtensions"
         xmlns:models="clr-namespace:OpenSpeed.Core.Models;assembly=OpenSpeed.Core"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance viewModel:MainWindowViewModel}"
-        Title="OpenSpeed" Height="660" Width="1050" MinHeight="550" MinWidth="900">
+        Title="OpenSpeed" Height="660" Width="1050" MinHeight="550" MinWidth="900"
+        WindowStyle="None" ResizeMode="CanResize">
+
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome CaptionHeight="48" ResizeBorderThickness="6"
+                            GlassFrameThickness="0" CornerRadius="0"
+                            UseAeroCaptionButtons="False"/>
+    </shell:WindowChrome.WindowChrome>
 
     <Window.Resources>
         <converter:BoolToConnectionStatusConverter x:Key="BoolToConnectionStatusConverter"/>
@@ -35,7 +43,6 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- ── Header bar ── -->
         <Border Grid.Row="0" Background="{StaticResource HeaderBrush}">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -46,30 +53,43 @@
                 <TextBlock Grid.Column="0" Text="OpenSpeed" Foreground="White" FontSize="18"
                            FontWeight="Bold" VerticalAlignment="Center" Margin="16,0"/>
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal"
-                            VerticalAlignment="Center" Margin="0,0,12,0">
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Stretch">
                     <TextBlock Text="{markupExtensions:Loc Language}" Foreground="#CBD5E0"
                                VerticalAlignment="Center" Margin="0,0,8,0" FontSize="12"/>
-                    <ComboBox Width="120"
+                    <ComboBox Width="120" VerticalAlignment="Center"
+                              shell:WindowChrome.IsHitTestVisibleInChrome="True"
                               ItemsSource="{markupExtensions:EnumValues EnumType=models:Language}"
                               SelectedItem="{Binding SelectedLanguage}"
                               Padding="6,3" VerticalContentAlignment="Center"/>
+
+                    <Button x:Name="ButtonMinimize" Content="&#xE921;" Margin="12,0,0,0"
+                            Style="{StaticResource CaptionButton}"
+                            ToolTip="{markupExtensions:Loc TtMinimize}"
+                            shell:WindowChrome.IsHitTestVisibleInChrome="True"
+                            Click="Minimize_OnClick"/>
+                    <Button x:Name="ButtonMaximize" Content="&#xE922;"
+                            Style="{StaticResource CaptionButton}"
+                            ToolTip="{markupExtensions:Loc TtMaximize}"
+                            shell:WindowChrome.IsHitTestVisibleInChrome="True"
+                            Click="MaximizeRestore_OnClick"/>
+                    <Button x:Name="ButtonClose" Content="&#xE8BB;"
+                            Style="{StaticResource CaptionCloseButton}"
+                            ToolTip="{markupExtensions:Loc TtClose}"
+                            shell:WindowChrome.IsHitTestVisibleInChrome="True"
+                            Click="Close_OnClick"/>
                 </StackPanel>
             </Grid>
         </Border>
 
-        <!-- ── Content ── -->
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="290"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- ── Left sidebar ── -->
             <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" Padding="0,4,0,0">
                 <StackPanel>
 
-                    <!-- CONNECTION -->
                     <Border Style="{StaticResource CardSection}">
                         <StackPanel>
                             <TextBlock Text="{markupExtensions:Loc Connection}" Style="{StaticResource SectionHeader}"/>
@@ -104,7 +124,6 @@
                         </StackPanel>
                     </Border>
 
-                    <!-- LOCOMOTIVE -->
                     <Border Style="{StaticResource CardSection}">
                         <StackPanel>
                             <TextBlock Text="{markupExtensions:Loc Locomotive}" Style="{StaticResource SectionHeader}"/>
@@ -127,10 +146,7 @@
                         </StackPanel>
                     </Border>
 
-                    <!-- ── Speed / Length tabs ── -->
                     <TabControl Margin="8,4">
-
-                        <!-- Speed tab -->
                         <TabItem Header="{markupExtensions:Loc TabSpeed}">
                             <Border Style="{StaticResource CardSection}" Margin="0,8,0,4">
                                 <StackPanel>
@@ -168,6 +184,12 @@
                                         </DataGrid.Columns>
                                     </DataGrid>
 
+                                    <Button Name="ButtonExport"
+                                            Content="{markupExtensions:Loc BtnExport}" Margin="0,12,0,0"
+                                            Style="{StaticResource SecondaryButton}"
+                                            Click="ButtonExport_OnClick"
+                                            IsEnabled="{calcBinding:Binding 'Steps.Count &gt; 0 and !AnyMeasurementInProgress'}"/>
+
                                     <Button Name="ButtonStartMeasurement"
                                             Content="{markupExtensions:Loc BtnStartSpeed}" Margin="0,12,0,0"
                                             Style="{StaticResource PrimaryButton}"
@@ -183,7 +205,6 @@
                             </Border>
                         </TabItem>
 
-                        <!-- Length tab -->
                         <TabItem Header="{markupExtensions:Loc TabLength}">
                             <Border Style="{StaticResource CardSection}" Margin="0,8,0,4">
                                 <StackPanel>
@@ -220,7 +241,6 @@
                 </StackPanel>
             </ScrollViewer>
 
-            <!-- ── Plot area ── -->
             <Border Grid.Column="1" Margin="8" Background="White" CornerRadius="8"
                     Effect="{StaticResource CardShadow}">
                 <oxy:PlotView x:Name="Plot" Model="{Binding PlotViewModel.Plot}"/>

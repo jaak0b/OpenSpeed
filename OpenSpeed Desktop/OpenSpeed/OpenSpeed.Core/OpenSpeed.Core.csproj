@@ -9,6 +9,7 @@
     <ItemGroup>
       <PackageReference Include="Autofac" Version="9.1.0" />
       <PackageReference Include="Autofac.Extras.CommonServiceLocator" Version="6.1.0" />
+      <PackageReference Include="ClosedXML" Version="0.104.2" />
     </ItemGroup>
 
 </Project>

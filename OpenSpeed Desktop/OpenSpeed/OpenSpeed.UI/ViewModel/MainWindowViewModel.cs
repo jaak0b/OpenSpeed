@@ -1,8 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using OpenSpeed.Core.Controller;
+using OpenSpeed.Core.Export;
 using OpenSpeed.Core.Helper;
 using OpenSpeed.Core.Interfaces;
 using OpenSpeed.Core.Models;
@@ -229,6 +231,34 @@ namespace OpenSpeed.UI.ViewModel
       finally
       {
         LengthMeasurementInProgress = false;
+      }
+    }
+
+    public void ExportResults()
+    {
+      if (Steps.Count == 0)
+      {
+        MessageBox.Show(_localization["MsgNoData"], _localization["MsgInputRequired"], MessageBoxButton.OK);
+        return;
+      }
+
+      var dialog = new Microsoft.Win32.SaveFileDialog
+                   {
+                     Filter = "Excel Workbook (*.xlsx)|*.xlsx",
+                     FileName = $"OpenSpeed_Loco{LocomotiveConfiguration.DecoderAddress}_{DateTime.Now:yyyy-MM-dd_HHmm}.xlsx"
+                   };
+      if (dialog.ShowDialog() != true)
+        return;
+
+      try
+      {
+        SpeedResultExporter.Export(dialog.FileName, Steps,
+                                   _localization["ColStep"], _localization["ColForward"], _localization["ColBackward"]);
+        Process.Start("explorer.exe", $"/select,\"{dialog.FileName}\"");
+      }
+      catch (Exception e)
+      {
+        MessageBox.Show(e.Message, _localization["MsgError"], MessageBoxButton.OK);
       }
     }
   }

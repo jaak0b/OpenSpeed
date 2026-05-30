@@ -41,7 +41,14 @@ namespace OpenSpeed.UI.Localization
       ["MsgPositionLoco"] = "Position the locomotive before the sensors in the forward direction.\nPlease set CV3 and CV4 of the locomotive decoder to 0!",
       ["PlotTitle"] = "Speeds",
       ["PlotForward"] = "Speed Forwards",
-      ["PlotBackward"] = "Speed Backwards"
+      ["PlotBackward"] = "Speed Backwards",
+      ["BtnExport"] = "Export to Excel",
+      ["AxisSpeedStep"] = "Speed Step",
+      ["AxisSpeed"] = "Speed (km/h)",
+      ["MsgNoData"] = "No measurements to export.",
+      ["TtMinimize"] = "Minimize",
+      ["TtMaximize"] = "Maximize",
+      ["TtClose"] = "Close"
     };
 
     private static readonly Dictionary<string, string> German = new()
@@ -75,7 +82,14 @@ namespace OpenSpeed.UI.Localization
       ["MsgPositionLoco"] = "Lokomotive in Vorwärtsrichtung vor den Sensoren positionieren.\nBitte CV3 und CV4 des Lok-Decoders auf 0 setzen!",
       ["PlotTitle"] = "Geschwindigkeiten",
       ["PlotForward"] = "Geschwindigkeit vorwärts",
-      ["PlotBackward"] = "Geschwindigkeit rückwärts"
+      ["PlotBackward"] = "Geschwindigkeit rückwärts",
+      ["BtnExport"] = "Nach Excel exportieren",
+      ["AxisSpeedStep"] = "Fahrstufe",
+      ["AxisSpeed"] = "Geschwindigkeit (km/h)",
+      ["MsgNoData"] = "Keine Messdaten zum Exportieren.",
+      ["TtMinimize"] = "Minimieren",
+      ["TtMaximize"] = "Maximieren",
+      ["TtClose"] = "Schließen"
     };
 
     public Language Current => _current;
