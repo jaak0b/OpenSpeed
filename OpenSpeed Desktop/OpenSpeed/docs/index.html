@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en" class="lang-en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>OpenSpeed – Model Train Speed &amp; Length Measurement</title>
+  <meta name="description" content="OpenSpeed – Precision speed and length measurement for model trains using IR sensors and a Roco/Fleischmann Z21. Free and open source."/>
+
+  <link rel="stylesheet" href="assets/style.css"/>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%232D3748'/%3E%3Cpath d='M6 22 L14 10 L18 16 L22 12 L26 22Z' fill='%2363B3ED' stroke='none'/%3E%3C/svg%3E"/>
+</head>
+<body>
+
+<!-- ══════════════════════ NAV ══════════════════════ -->
+<nav>
+  <div class="nav-logo">
+    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="32" height="32" rx="6" fill="#1A202C"/>
+      <path d="M5 23 L13 9 L17 16 L21 11 L27 23" stroke="#63B3ED" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <circle cx="13" cy="9" r="2.5" fill="#63B3ED"/>
+      <circle cx="21" cy="11" r="2.5" fill="#F6AD55"/>
+    </svg>
+    OpenSpeed
+  </div>
+
+  <ul class="nav-links">
+    <li><a href="#features"><span data-lang-inline="en">Features</span><span data-lang-inline="de">Funktionen</span></a></li>
+    <li><a href="#hardware"><span data-lang-inline="en">Hardware</span><span data-lang-inline="de">Hardware</span></a></li>
+    <li><a href="#wiring"><span data-lang-inline="en">Wiring</span><span data-lang-inline="de">Verkabelung</span></a></li>
+    <li><a href="#firmware"><span data-lang-inline="en">Firmware</span><span data-lang-inline="de">Firmware</span></a></li>
+    <li><a href="#software"><span data-lang-inline="en">Software</span><span data-lang-inline="de">Software</span></a></li>
+    <li><a href="#api">API</a></li>
+    <li><a href="https://github.com/jaak0b/OpenSpeed" target="_blank" rel="noopener">GitHub ↗</a></li>
+  </ul>
+
+  <button class="lang-btn" id="lang-toggle" aria-label="Switch language">DE</button>
+</nav>
+
+<!-- ══════════════════════ HERO ══════════════════════ -->
+<header class="hero">
+  <div class="hero-badge">
+    <span data-lang-inline="en">Open Source · Windows · Roco/Fleischmann Z21</span>
+    <span data-lang-inline="de">Open Source · Windows · Roco/Fleischmann Z21</span>
+  </div>
+
+  <h1>
+    <span data-lang-inline="en">Measure Your <span>Model Train</span><br>With Precision</span>
+    <span data-lang-inline="de">Ihre <span>Modellbahn</span><br>präzise vermessen</span>
+  </h1>
+
+  <p>
+    <span data-lang-inline="en">OpenSpeed is a free, open-source system for measuring the scale speed and physical length of model trains — using an IR sensor module and a modern desktop app.</span>
+    <span data-lang-inline="de">OpenSpeed ist ein kostenloses Open-Source-System zur Messung der Maßstabsgeschwindigkeit und Länge von Modellzügen – mit einem IR-Sensor-Modul und einer modernen Desktopanwendung.</span>
+  </p>
+
+  <div style="display:inline-flex;align-items:center;gap:10px;background:rgba(252,129,129,.15);border:1.5px solid #FC8181;border-radius:8px;padding:10px 18px;margin-bottom:8px;font-size:.9rem">
+    <span style="font-size:1.1rem">⚠️</span>
+    <span style="color:#FED7D7"><strong style="color:#FC8181"><span data-lang-inline="en">Requires a Roco / Fleischmann Z21 command station.</span><span data-lang-inline="de">Erfordert eine Roco / Fleischmann Z21-Zentrale.</span></strong>
+    <span data-lang-inline="en"> Other DCC systems (Märklin, ESU, Digitrax, …) are not supported.</span><span data-lang-inline="de"> Andere DCC-Systeme (Märklin, ESU, Digitrax, …) werden nicht unterstützt.</span></span>
+  </div>
+
+  <div class="hero-actions">
+    <a href="#wiring" class="btn btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="13 2 13 9 20 9"/><path d="M20 2H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7z"/></svg>
+      <span data-lang-inline="en">Wiring Guide</span>
+      <span data-lang-inline="de">Verdrahtungsanleitung</span>
+    </a>
+    <a href="#software" class="btn btn-outline">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <span data-lang-inline="en">Download App</span>
+      <span data-lang-inline="de">App herunterladen</span>
+    </a>
+  </div>
+</header>
+
+<!-- ══════════════════════ HOW IT WORKS ══════════════════════ -->
+<section id="how-it-works" style="background:var(--surface);padding:48px 0">
+  <div class="container">
+
+    <div data-lang="en">
+      <div class="section-tag">How it works</div>
+      <h2>Speed from time, length from blockage</h2>
+      <p class="section-lead">Two IR sensors on a straight section of track — at a distance <strong>you choose and configure in the firmware</strong> — measure both speed and train length without any modifications to the locomotive.</p>
+    </div>
+    <div data-lang="de">
+      <div class="section-tag">Funktionsprinzip</div>
+      <h2>Geschwindigkeit aus Zeit, Länge aus Sperrzeit</h2>
+      <p class="section-lead">Zwei IR-Sensoren auf einem geraden Gleisabschnitt – in einem <strong>frei wählbaren, in der Firmware konfigurierten Abstand</strong> – messen Geschwindigkeit und Zuglänge ohne Eingriff in die Lokomotive.</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:8px">
+
+      <div class="feature-card" style="border-top:3px solid var(--primary)">
+        <div style="font-size:1.5rem;margin-bottom:12px">1️⃣</div>
+        <h3><span data-lang-inline="en">Train enters sensor field</span><span data-lang-inline="de">Zug tritt ins Sensorfeld ein</span></h3>
+        <p><span data-lang-inline="en">Whichever sensor fires first (GPIO 6 or 7) becomes the <em>start sensor</em>. Direction is detected automatically — no manual configuration needed.</span><span data-lang-inline="de">Der Sensor, der zuerst auslöst (GPIO 6 oder 7), wird zum <em>Startsensor</em>. Die Richtung wird automatisch erkannt – keine manuelle Konfiguration nötig.</span></p>
+      </div>
+
+      <div class="feature-card" style="border-top:3px solid var(--primary)">
+        <div style="font-size:1.5rem;margin-bottom:12px">2️⃣</div>
+        <h3><span data-lang-inline="en">Train reaches the second sensor</span><span data-lang-inline="de">Zug erreicht den zweiten Sensor</span></h3>
+        <p><span data-lang-inline="en">The transit time between the two sensors is measured in milliseconds. <strong>speed = SENSOR_DISTANCE_M ÷ time × 3.6</strong> gives km/h. The distance is set by you in the firmware.</span><span data-lang-inline="de">Die Durchfahrtszeit zwischen beiden Sensoren wird in Millisekunden gemessen. <strong>Geschwindigkeit = SENSOR_DISTANCE_M ÷ Zeit × 3,6</strong> ergibt km/h. Den Abstand legen Sie selbst in der Firmware fest.</span></p>
+      </div>
+
+      <div class="feature-card" style="border-top:3px solid var(--primary)">
+        <div style="font-size:1.5rem;margin-bottom:12px">3️⃣</div>
+        <h3><span data-lang-inline="en">Train clears the second sensor</span><span data-lang-inline="de">Zug verlässt den zweiten Sensor</span></h3>
+        <p><span data-lang-inline="en">The second sensor is released after the last wagon passes. Blockage duration × speed = physical length in cm. Result is published via REST after a 1-second debounce.</span><span data-lang-inline="de">Der zweite Sensor wird freigegeben, nachdem der letzte Wagen passiert hat. Sperrzeit × Geschwindigkeit = physische Länge in cm. Ergebnis nach 1 Sekunde Entprellzeit per REST verfügbar.</span></p>
+      </div>
+
+    </div>
+
+    <div class="alert alert-info" style="margin-top:24px">
+      <span class="alert-icon">ℹ️</span>
+      <div>
+        <span data-lang-inline="en">The desktop app multiplies the raw <code>speed_kmh</code> value from the sensor by the configured <strong>scale factor</strong> (e.g. ×87 for H0) to produce the prototype speed. The firmware always returns model-speed in km/h — scale conversion happens entirely in software.</span>
+        <span data-lang-inline="de">Die Desktop-App multipliziert den rohen <code>speed_kmh</code>-Wert des Sensors mit dem konfigurierten <strong>Maßstabsfaktor</strong> (z. B. ×87 für H0), um die Vorbild-Geschwindigkeit zu erhalten. Die Firmware liefert immer die Modellgeschwindigkeit in km/h – die Maßstabsumrechnung erfolgt ausschließlich in der Software.</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════ FEATURES ══════════════════════ -->
+<section id="features">
+  <div class="container">
+
+    <div data-lang="en">
+      <div class="section-tag">What it does</div>
+      <h2>Everything you need to calibrate your fleet</h2>
+      <p class="section-lead">Two measurement modes, real-time results, and full DCC integration — all in one application.</p>
+    </div>
+    <div data-lang="de">
+      <div class="section-tag">Funktionsumfang</div>
+      <h2>Alles, um Ihre Flotte zu kalibrieren</h2>
+      <p class="section-lead">Zwei Messmodi, Echtzeitergebnisse und vollständige DCC-Integration – in einer Anwendung.</p>
+    </div>
+
+    <div class="feature-grid">
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background:#EBF8FF">🚄</div>
+        <h3><span data-lang-inline="en">Speed Measurement</span><span data-lang-inline="de">Geschwindigkeitsmessung</span></h3>
+        <p><span data-lang-inline="en">Automatically sweeps every DCC speed step from a configurable start to the maximum, measuring a forward and backward pass for each step. Results appear on a live chart as they arrive.</span><span data-lang-inline="de">Misst automatisch jeden DCC-Fahrstufenschritt vorwärts und rückwärts von einer konfigurierbaren Startstufe bis zum Maximum. Ergebnisse erscheinen sofort live im Diagramm.</span></p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background:#F0FFF4">📏</div>
+        <h3><span data-lang-inline="en">Length Measurement</span><span data-lang-inline="de">Längenmessung</span></h3>
+        <p><span data-lang-inline="en">Measures the physical length of any train in centimetres. The firmware tracks how long the exit sensor is blocked and multiplies by the measured speed. Forward and backward passes are averaged.</span><span data-lang-inline="de">Misst die physische Länge eines Zuges in Zentimetern. Die Firmware erfasst die Sperrzeit des Ausgangssensors und multipliziert mit der gemessenen Geschwindigkeit. Vorwärts- und Rückwärtsfahrt werden gemittelt.</span></p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background:#FFF5F5">📊</div>
+        <h3><span data-lang-inline="en">Live Speed Plot</span><span data-lang-inline="de">Echtzeit-Diagramm</span></h3>
+        <p><span data-lang-inline="en">Results appear on a live chart as each speed step is measured. Forward (blue) and backward (orange) passes are shown with a legend. The X axis is fixed to 0–128 speed steps; Y auto-expands if speeds exceed 200 km/h.</span><span data-lang-inline="de">Ergebnisse erscheinen live im Diagramm. Vorwärts (blau) und rückwärts (orange) mit Legende. Die X-Achse ist auf 0–128 Fahrstufen fixiert; die Y-Achse expandiert automatisch über 200 km/h.</span></p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background:#FFFFF0">📁</div>
+        <h3><span data-lang-inline="en">Excel Export</span><span data-lang-inline="de">Excel-Export</span></h3>
+        <p><span data-lang-inline="en">Export all measured speed steps to a formatted .xlsx spreadsheet with one click. The file is pre-named with the decoder address and timestamp, and Explorer opens with the file selected.</span><span data-lang-inline="de">Alle gemessenen Fahrstufen mit einem Klick in eine formatierte .xlsx-Tabelle exportieren, vorbenannt mit Decoderadresse und Zeitstempel. Explorer öffnet sich direkt mit markierter Datei.</span></p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background:#EBF8FF">🌙</div>
+        <h3><span data-lang-inline="en">Dark &amp; Light Mode</span><span data-lang-inline="de">Hell- &amp; Dunkelmodus</span></h3>
+        <p><span data-lang-inline="en">Instantly switch between a light and dark theme via the sun/moon button in the header. The chart adapts automatically. The chosen theme persists across restarts.</span><span data-lang-inline="de">Sofortiger Wechsel zwischen hellem und dunklem Design per Sonne/Mond-Schaltfläche im Header. Das Diagramm passt sich automatisch an. Die Einstellung bleibt nach Neustart erhalten.</span></p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background:#F0FFF4">🌍</div>
+        <h3><span data-lang-inline="en">English &amp; German UI</span><span data-lang-inline="de">Englische &amp; deutsche Oberfläche</span></h3>
+        <p><span data-lang-inline="en">The entire interface is available in English and German. Switch at runtime from the header dropdown — no restart required. The choice is persisted to Settings.json.</span><span data-lang-inline="de">Die gesamte Oberfläche ist auf Englisch und Deutsch verfügbar. Umschalten im laufenden Betrieb über das Header-Dropdown – kein Neustart erforderlich.</span></p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ HARDWARE ══════════════════════ -->
+<section id="hardware">
+  <div class="container">
+
+    <div data-lang="en">
+      <div class="section-tag">Bill of Materials</div>
+      <h2>Hardware Requirements</h2>
+      <p class="section-lead">The sensor module is built from off-the-shelf components costing under €20. The Z21 is your existing DCC command station.</p>
+    </div>
+    <div data-lang="de">
+      <div class="section-tag">Stückliste</div>
+      <h2>Hardware-Anforderungen</h2>
+      <p class="section-lead">Das Sensormodul besteht aus Standard-Komponenten für unter 20 €. Die Z21 ist Ihre vorhandene DCC-Zentrale.</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px">
+
+      <div class="wiring-card">
+        <div class="wiring-card-header">
+          🔩
+          <span data-lang-inline="en">Sensor Module — Bill of Materials</span>
+          <span data-lang-inline="de">Sensor-Modul – Stückliste</span>
+        </div>
+        <div class="wiring-card-body">
+          <table class="pin-table">
+            <thead>
+              <tr>
+                <th><span data-lang-inline="en">Component</span><span data-lang-inline="de">Bauteil</span></th>
+                <th><span data-lang-inline="en">Qty</span><span data-lang-inline="de">Anz.</span></th>
+                <th><span data-lang-inline="en">Notes</span><span data-lang-inline="de">Hinweise</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><a href="https://www.amazon.de/dp/B0CZQPFC48" target="_blank" rel="noopener">ESP32 DevKit v1</a></td>
+                <td>1×</td>
+                <td><span data-lang-inline="en">Any 38-pin variant with GPIO 6 &amp; 7 available</span><span data-lang-inline="de">Beliebige 38-Pin-Variante mit GPIO 6 &amp; 7</span></td>
+              </tr>
+              <tr>
+                <td><a href="https://www.amazon.de/dp/B07D924JHT" target="_blank" rel="noopener">IR Sensor (TCRT5000)</a></td>
+                <td>2×</td>
+                <td><span data-lang-inline="en">Reflection type module with digital OUT, active LOW</span><span data-lang-inline="de">Reflexionsmodul mit digitalem OUT, aktiv LOW</span></td>
+              </tr>
+              <tr>
+                <td><span data-lang-inline="en">Mounting rail / crossbar</span><span data-lang-inline="de">Montageschienenhalter / Querbalken</span></td>
+                <td>1×</td>
+                <td><span data-lang-inline="en">Fix sensors at <strong>your chosen distance</strong> — measure precisely and set <code>SENSOR_DISTANCE_M</code> in firmware</span><span data-lang-inline="de">Sensoren im <strong>selbst gewählten Abstand</strong> fixieren – genau messen und <code>SENSOR_DISTANCE_M</code> in der Firmware setzen</span></td>
+              </tr>
+              <tr>
+                <td><span data-lang-inline="en">5 V USB power supply</span><span data-lang-inline="de">5-V-USB-Netzteil</span></td>
+                <td>1×</td>
+                <td><span data-lang-inline="en">Powers the ESP32; sensors are fed from its 3.3 V pin</span><span data-lang-inline="de">Versorgt den ESP32; Sensoren werden am 3,3-V-Pin betrieben</span></td>
+              </tr>
+              <tr>
+                <td>Wi-Fi router / AP</td>
+                <td>1×</td>
+                <td><span data-lang-inline="en">Same LAN segment as the Windows PC and Z21</span><span data-lang-inline="de">Gleiches LAN-Segment wie Windows-PC und Z21</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="wiring-card">
+        <div class="wiring-card-header">
+          🖥️
+          <span data-lang-inline="en">PC &amp; DCC Requirements</span>
+          <span data-lang-inline="de">PC- &amp; DCC-Anforderungen</span>
+        </div>
+        <div class="wiring-card-body">
+
+          <div class="compat-box">
+            <div class="compat-box-title">
+              ⛔
+              <span data-lang-inline="en">Z21 command station required — no other system is supported</span>
+              <span data-lang-inline="de">Z21-Zentrale erforderlich – kein anderes System wird unterstützt</span>
+            </div>
+            <div class="compat-grid">
+              <div class="compat-col yes">
+                <h4><span data-lang-inline="en">✔ Compatible</span><span data-lang-inline="de">✔ Kompatibel</span></h4>
+                <ul>
+                  <li>Roco Z21 (all variants)</li>
+                  <li>Fleischmann z21 (all variants)</li>
+                  <li>z21 start</li>
+                </ul>
+              </div>
+              <div class="compat-col no">
+                <h4><span data-lang-inline="en">✗ Not supported</span><span data-lang-inline="de">✗ Nicht unterstützt</span></h4>
+                <ul>
+                  <li>Märklin Central Station 2 / 3</li>
+                  <li>ESU ECoS</li>
+                  <li>Digitrax / NCE / Lenz</li>
+                  <li>JMRI, iTrain, <span data-lang-inline="en">other software</span><span data-lang-inline="de">andere Software</span></li>
+                  <li><span data-lang-inline="en">Any other DCC system</span><span data-lang-inline="de">Jedes andere DCC-System</span></li>
+                </ul>
+              </div>
+            </div>
+            <p style="margin-top:12px;font-size:.82rem;color:#742A2A">
+              <span data-lang-inline="en">OpenSpeed communicates with the Z21 via its proprietary LAN protocol, which is specific to Roco/Fleischmann hardware and is not implemented by any other manufacturer.</span>
+              <span data-lang-inline="de">OpenSpeed kommuniziert mit der Z21 über das proprietäre LAN-Protokoll, das spezifisch für Roco/Fleischmann-Hardware ist und von keinem anderen Hersteller implementiert wird.</span>
+            </p>
+          </div>
+
+          <table class="spec-table" style="margin-top:4px">
+            <tr>
+              <td><span data-lang-inline="en">Operating System</span><span data-lang-inline="de">Betriebssystem</span></td>
+              <td>Windows 10 / 11 (64-bit)</td>
+            </tr>
+            <tr>
+              <td><span data-lang-inline="en">Runtime</span><span data-lang-inline="de">Laufzeit</span></td>
+              <td>.NET 8 Desktop Runtime</td>
+            </tr>
+            <tr>
+              <td><span data-lang-inline="en">Network</span><span data-lang-inline="de">Netzwerk</span></td>
+              <td>
+                <span data-lang-inline="en">PC, ESP32, and Z21 on the same LAN subnet</span>
+                <span data-lang-inline="de">PC, ESP32 und Z21 im selben LAN-Subnetz</span>
+              </td>
+            </tr>
+            <tr>
+              <td>CV3 / CV4</td>
+              <td>
+                <span data-lang-inline="en">Must be <strong>0</strong> — no ramp</span>
+                <span data-lang-inline="de">Muss <strong>0</strong> sein – keine Rampe</span>
+              </td>
+            </tr>
+            <tr>
+              <td><span data-lang-inline="en">Track section</span><span data-lang-inline="de">Gleisabschnitt</span></td>
+              <td>
+                <span data-lang-inline="en">Straight, min. <strong>1.5 m</strong> run-up before sensor 1</span>
+                <span data-lang-inline="de">Gerade, mind. <strong>1,5 m</strong> Anlaufstrecke vor Sensor 1</span>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════ WIRING ══════════════════════ -->
+<section id="wiring">
+  <div class="container">
+
+    <div data-lang="en">
+      <div class="section-tag">Wiring Guide</div>
+      <h2>Connecting the IR Sensors to the ESP32</h2>
+      <p class="section-lead">The sensors use the ESP32's internal pull-up resistors. The sensor output pulls the GPIO pin LOW when a train is detected. No external resistors are needed.</p>
+    </div>
+    <div data-lang="de">
+      <div class="section-tag">Verdrahtungsanleitung</div>
+      <h2>IR-Sensoren am ESP32 anschließen</h2>
+      <p class="section-lead">Die Sensoren nutzen die internen Pull-up-Widerstände des ESP32. Der Sensor-Ausgang zieht den GPIO-Pin auf LOW, wenn ein Zug erkannt wird. Externe Widerstände sind nicht erforderlich.</p>
+    </div>
+
+    <!-- Full wiring diagram -->
+    <div class="diagram-wrap">
+<pre>
+                <span class="hl">SENSOR 1 (GPIO 6)</span>                   <span class="hl">SENSOR 2 (GPIO 7)</span>
+                 Entry / Einfahrt                     Exit / Ausfahrt
+
+               ┌──────────────┐                    ┌──────────────┐
+               │  TCRT5000    │                    │  TCRT5000    │
+               │  Module      │                    │  Module      │
+               │              │                    │              │
+  <span class="hl-r">VCC (3.3V)</span> ───┤ VCC      OUT ├─────────────────┤ OUT      VCC ├─── <span class="hl-r">VCC (3.3V)</span>
+  <span class="hl-r">GND</span>       ───┤ GND          │                    │          GND ├─── <span class="hl-r">GND</span>
+               └──────┬───────┘                    └───────┬──────┘
+                      │ OUT (active LOW)    (active LOW) OUT │
+                      │                                      │
+          ────────────┼──────────────────────────────────────┼────────────
+                      ↓                                      ↓
+          ┌───────────────────────────────────────────────────────────────┐
+          │                    <span class="hl">ESP32 DevKit</span>                              │
+          │                                                               │
+          │   <span class="hl-g">GPIO 6</span>  ◄──── Sensor 1 OUT    Sensor 2 OUT ────►  <span class="hl-g">GPIO 7</span>   │
+          │   <span class="hl-r">3V3</span>     ──── to both sensor VCC pins                       │
+          │   <span class="hl-r">GND</span>     ──── to both sensor GND pins                       │
+          │                                                               │
+          │   USB Micro/C ──────────────────────────────► 5V USB Charger │
+          │   Wi-Fi ────────────────────────────────────► LAN Router/AP  │
+          └───────────────────────────────────────────────────────────────┘
+
+          ◄──────────── <span class="hl-y">SENSOR_DISTANCE_M</span> (e.g. 0.49 m) ────────────►
+          (set this constant in the firmware to match your actual installation)
+
+  Sensors face <span class="hl-y">downward</span> from a crossbar — detecting reflections from the
+  locomotive roof / wagon tops as the train passes underneath.
+</pre>
+    </div>
+
+    <div class="sensor-dist-box">
+      <div class="sensor-dist-box-title">
+        📐
+        <span data-lang-inline="en">Sensor distance — choose any value, then set it in the firmware</span>
+        <span data-lang-inline="de">Sensorabstand – frei wählbar, dann in der Firmware einstellen</span>
+      </div>
+      <div data-lang="en">
+        <p>The firmware constant <code>SENSOR_DISTANCE_M</code> tells the ESP32 how far apart the sensors are. <strong>You decide the distance</strong> based on your layout — then measure it precisely and enter the exact value before flashing.</p>
+        <ul>
+          <li>A longer base distance (e.g. 1.0 m) improves speed accuracy at low speeds.</li>
+          <li>A shorter distance (e.g. 0.3 m) is easier to fit on tight layouts.</li>
+          <li>The default in the sketch is <strong>0.49 m (49 cm)</strong> — change it to match your actual installation.</li>
+          <li>After mounting, measure the distance between the <em>detector centres</em> with a ruler to the nearest millimetre, then update <code>SENSOR_DISTANCE_M</code> and re-flash.</li>
+          <li>If the distance shifts after installation, you must re-measure and re-flash — the firmware does not auto-calibrate.</li>
+        </ul>
+      </div>
+      <div data-lang="de">
+        <p>Die Firmware-Konstante <code>SENSOR_DISTANCE_M</code> teilt dem ESP32 den Abstand zwischen den Sensoren mit. <strong>Sie wählen den Abstand</strong> passend zu Ihrer Anlage – dann genau messen und den exakten Wert vor dem Flashen eintragen.</p>
+        <ul>
+          <li>Ein größerer Abstand (z. B. 1,0 m) verbessert die Genauigkeit bei niedrigen Geschwindigkeiten.</li>
+          <li>Ein kleinerer Abstand (z. B. 0,3 m) lässt sich auf beengten Anlagen leichter unterbringen.</li>
+          <li>Der Standardwert im Sketch ist <strong>0,49 m (49 cm)</strong> – auf den tatsächlichen Einbauwert ändern.</li>
+          <li>Nach der Montage den Abstand zwischen den <em>Sensormittelpunkten</em> auf den Millimeter genau nachmessen und <code>SENSOR_DISTANCE_M</code> aktualisieren und neu flashen.</li>
+          <li>Verändert sich der Abstand nach der Installation, muss neu gemessen und neu geflasht werden – die Firmware kalibriert sich nicht selbst.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="wiring-grid">
+
+      <!-- Pin assignment table -->
+      <div class="wiring-card">
+        <div class="wiring-card-header">
+          🔌
+          <span data-lang-inline="en">ESP32 Pin Assignment</span>
+          <span data-lang-inline="de">ESP32-Pin-Belegung</span>
+        </div>
+        <div class="wiring-card-body">
+          <table class="pin-table">
+            <thead>
+              <tr>
+                <th>ESP32 Pin</th>
+                <th><span data-lang-inline="en">Connects to</span><span data-lang-inline="de">Verbindet mit</span></th>
+                <th><span data-lang-inline="en">Wire color (suggestion)</span><span data-lang-inline="de">Kabelfarbe (Empfehlung)</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="pin-chip vcc">3V3</span></td>
+                <td><span data-lang-inline="en">Both sensor <strong>VCC</strong> pins</span><span data-lang-inline="de">Beide Sensor-<strong>VCC</strong>-Pins</span></td>
+                <td style="color:#E53E3E">● <span data-lang-inline="en">Red</span><span data-lang-inline="de">Rot</span></td>
+              </tr>
+              <tr>
+                <td><span class="pin-chip gnd">GND</span></td>
+                <td><span data-lang-inline="en">Both sensor <strong>GND</strong> pins</span><span data-lang-inline="de">Beide Sensor-<strong>GND</strong>-Pins</span></td>
+                <td style="color:#2D3748">● <span data-lang-inline="en">Black</span><span data-lang-inline="de">Schwarz</span></td>
+              </tr>
+              <tr>
+                <td><span class="pin-chip data">GPIO 6</span></td>
+                <td>
+                  <span data-lang-inline="en">Sensor 1 <strong>OUT</strong> — entry sensor (train passes first going forward)</span>
+                  <span data-lang-inline="de">Sensor 1 <strong>OUT</strong> – Einfahrtsensor (Zug fährt zuerst drüber bei Vorwärtsfahrt)</span>
+                </td>
+                <td style="color:#38A169">● <span data-lang-inline="en">Green</span><span data-lang-inline="de">Grün</span></td>
+              </tr>
+              <tr>
+                <td><span class="pin-chip data">GPIO 7</span></td>
+                <td>
+                  <span data-lang-inline="en">Sensor 2 <strong>OUT</strong> — exit sensor (train passes second going forward)</span>
+                  <span data-lang-inline="de">Sensor 2 <strong>OUT</strong> – Ausfahrtsensor (Zug fährt zuerst drüber bei Vorwärtsfahrt)</span>
+                </td>
+                <td style="color:#DD6B20">● <span data-lang-inline="en">Yellow / Orange</span><span data-lang-inline="de">Gelb / Orange</span></td>
+              </tr>
+              <tr>
+                <td><span class="pin-chip">USB</span></td>
+                <td><span data-lang-inline="en">5 V USB power supply (phone charger is fine)</span><span data-lang-inline="de">5-V-USB-Netzteil (Handy-Ladegerät genügt)</span></td>
+                <td>—</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="alert alert-info" style="margin-top:14px">
+            <span class="alert-icon">ℹ️</span>
+            <div>
+              <span data-lang-inline="en">The firmware uses <code>INPUT_PULLUP</code> on both GPIO pins, so the internal pull-up is active. The sensor's OUT pin should be <em>open-collector</em> or <em>open-drain</em> and pull to GND when a train is detected — as TCRT5000 modules do.</span>
+              <span data-lang-inline="de">Die Firmware setzt beide GPIO-Pins auf <code>INPUT_PULLUP</code>, der interne Pull-up ist aktiv. Der OUT-Pin des Sensors muss <em>Open-Collector</em> oder <em>Open-Drain</em> sein und bei Erkennung auf GND ziehen – wie TCRT5000-Module es tun.</span>
+            </div>
+          </div>
+
+          <div class="alert alert-success" style="margin-top:10px">
+            <span class="alert-icon">↔️</span>
+            <div>
+              <strong><span data-lang-inline="en">Direction is auto-detected.</span><span data-lang-inline="de">Richtung wird automatisch erkannt.</span></strong>
+              <span data-lang-inline="en"> The firmware treats whichever sensor fires first as the start sensor. A train running in reverse is measured just as accurately.</span>
+              <span data-lang-inline="de"> Die Firmware behandelt den zuerst auslösenden Sensor als Startsensor. Ein in Rückwärtsrichtung fahrender Zug wird genauso genau gemessen.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Track mounting -->
+      <div class="wiring-card">
+        <div class="wiring-card-header">
+          🛤️
+          <span data-lang-inline="en">Track Mounting</span>
+          <span data-lang-inline="de">Streckenmontage</span>
+        </div>
+        <div class="wiring-card-body">
+
+          <div data-lang="en">
+            <p style="margin-bottom:14px">Mount the sensors on a crossbar or arch over a straight section of track so they point <strong>downward</strong> toward passing rolling stock.</p>
+            <div class="diagram-wrap" style="margin:0 0 14px">
+<pre>
+  Crossbar / arch above the track
+  ┌─────────────────────────────────────────┐
+  │  [Sensor 1 / GPIO 6]  [Sensor 2 / GPIO 7]│
+  │          ↓                    ↓          │
+══╪══════════╪════════════════════╪══════════╪══  ← Track
+  │    Detection zone        Detection zone  │
+  └─────────────────────────────────────────┘
+        ◄── SENSOR_DISTANCE_M (your value) ──►
+</pre>
+            </div>
+            <ul style="font-size:.875rem;color:var(--text-secondary);padding-left:18px">
+              <li>Sensor height: approx. <strong>5–15 mm</strong> above the tallest vehicle in your fleet.</li>
+              <li>Test with the shortest and tallest rolling stock — all must trigger reliably.</li>
+              <li>Avoid direct sunlight on the sensors (causes false triggers).</li>
+              <li>Provide at least <strong>1.5 m</strong> of straight track before Sensor 1 for constant-speed run-up.</li>
+              <li>Leave at least <strong>1 m</strong> of track after Sensor 2 for the loco to decelerate and stop.</li>
+            </ul>
+          </div>
+
+          <div data-lang="de">
+            <p style="margin-bottom:14px">Sensoren an einem Querbalken oder Bogen über einem geraden Gleisabschnitt montieren, sodass sie <strong>nach unten</strong> auf das Rollmaterial zeigen.</p>
+            <div class="diagram-wrap" style="margin:0 0 14px">
+<pre>
+  Querbalken / Bogen über dem Gleis
+  ┌─────────────────────────────────────────┐
+  │  [Sensor 1 / GPIO 6]  [Sensor 2 / GPIO 7]│
+  │          ↓                    ↓          │
+══╪══════════╪════════════════════╪══════════╪══  ← Gleis
+  │  Detektionszone       Detektionszone     │
+  └─────────────────────────────────────────┘
+        ◄── SENSOR_DISTANCE_M (your value) ──►
+</pre>
+            </div>
+            <ul style="font-size:.875rem;color:var(--text-secondary);padding-left:18px">
+              <li>Sensorhöhe: ca. <strong>5–15 mm</strong> über dem höchsten Fahrzeug im Fuhrpark.</li>
+              <li>Mit kleinstem und größtem Rollmaterial testen – alle müssen zuverlässig auslösen.</li>
+              <li>Direktes Sonnenlicht auf die Sensoren vermeiden (verursacht Fehlauslösungen).</li>
+              <li>Mindestens <strong>1,5 m</strong> geraden Anlaufweg vor Sensor 1 einplanen.</li>
+              <li>Mindestens <strong>1 m</strong> Bremsweg nach Sensor 2 für die Lokomotive vorsehen.</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════ FIRMWARE ══════════════════════ -->
+<section id="firmware">
+  <div class="container">
+
+    <div data-lang="en">
+      <div class="section-tag">Firmware</div>
+      <h2>Flashing the ESP32 Firmware</h2>
+      <p class="section-lead">The sketch lives in <code>Arduino Sketch/OpenSpeed/OpenSpeed.ino</code>. You only need to edit two lines before flashing.</p>
+    </div>
+    <div data-lang="de">
+      <div class="section-tag">Firmware</div>
+      <h2>ESP32-Firmware flashen</h2>
+      <p class="section-lead">Der Sketch befindet sich in <code>Arduino Sketch/OpenSpeed/OpenSpeed.ino</code>. Vor dem Flashen müssen nur zwei Zeilen angepasst werden.</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px">
+
+      <div>
+        <div data-lang="en">
+          <h3 style="font-size:1rem;margin-bottom:16px;color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Prerequisites</h3>
+          <div class="steps">
+            <div class="step">
+              <div class="step-num">1</div>
+              <div>
+                <h3>Install Arduino IDE 2</h3>
+                <p>Download from <a href="https://www.arduino.cc/en/software" target="_blank" rel="noopener">arduino.cc</a>. In <strong>Board Manager</strong> install <em>esp32</em> by Espressif Systems (version 2.x or 3.x).</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">2</div>
+              <div>
+                <h3>Install libraries</h3>
+                <p>In <strong>Library Manager</strong> install:<br>
+                  • <strong>ESPAsyncWebServer</strong> by me-no-dev<br>
+                  • <strong>AsyncTCP</strong> by me-no-dev</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">3</div>
+              <div>
+                <h3>Open the sketch</h3>
+                <p>Open <code>Arduino Sketch/OpenSpeed/OpenSpeed.ino</code> from the repository root.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div data-lang="de">
+          <h3 style="font-size:1rem;margin-bottom:16px;color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Voraussetzungen</h3>
+          <div class="steps">
+            <div class="step">
+              <div class="step-num">1</div>
+              <div>
+                <h3>Arduino IDE 2 installieren</h3>
+                <p>Von <a href="https://www.arduino.cc/en/software" target="_blank" rel="noopener">arduino.cc</a> herunterladen. Im <strong>Board-Manager</strong> <em>esp32</em> von Espressif Systems installieren (Version 2.x oder 3.x).</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">2</div>
+              <div>
+                <h3>Bibliotheken installieren</h3>
+                <p>Im <strong>Bibliotheks-Manager</strong> installieren:<br>
+                  • <strong>ESPAsyncWebServer</strong> von me-no-dev<br>
+                  • <strong>AsyncTCP</strong> von me-no-dev</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">3</div>
+              <div>
+                <h3>Sketch öffnen</h3>
+                <p><code>Arduino Sketch/OpenSpeed/OpenSpeed.ino</code> aus dem Repository-Stammverzeichnis öffnen.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div data-lang="en">
+          <h3 style="font-size:1rem;margin-bottom:16px;color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Edit &amp; Flash</h3>
+          <div class="steps">
+            <div class="step">
+              <div class="step-num">4</div>
+              <div>
+                <h3>Set your Wi-Fi credentials</h3>
+                <p>Edit the two Wi-Fi constants at the top of the sketch (marked <em>EDIT FIELDS BELOW</em>):</p>
+                <div class="code-block" style="margin-top:8px"><code><span class="kw">const char*</span> WIFI_SSID = <span class="str">"YourNetworkName"</span>;
+<span class="kw">const char*</span> WIFI_PASS = <span class="str">"YourPassword"</span>;</code></div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">5</div>
+              <div>
+                <h3>⚠️ Set your sensor distance</h3>
+                <p><strong>This is the most important configuration step.</strong> Measure the distance between your two sensor centres with a ruler (to the nearest mm), then set:</p>
+                <div class="code-block" style="margin-top:8px"><code><span class="kw">const float</span> SENSOR_DISTANCE_M = <span class="num">0.49f</span>;</code></div>
+                <p style="margin-top:8px">Example: if your sensors are 65 cm apart, enter <code>0.65f</code>. If the value is wrong, <strong>all speed and length measurements will be systematically incorrect</strong> with no error message.</p>
+                <p style="margin-top:6px">You can also change the GPIO pins here if your wiring differs:</p>
+                <div class="code-block" style="margin-top:6px"><code><span class="kw">const int</span> SENSOR1_PIN = <span class="num">6</span>;
+<span class="kw">const int</span> SENSOR2_PIN = <span class="num">7</span>;</code></div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">6</div>
+              <div>
+                <h3>Select board &amp; upload</h3>
+                <p>Tools → Board → <strong>ESP32 Dev Module</strong>. Select the COM port. Click <strong>Upload ▶</strong>.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">7</div>
+              <div>
+                <h3>Note the IP address</h3>
+                <p>Open Serial Monitor at <strong>115200 baud</strong>. After "Connected!" the assigned IP prints on one line, e.g. <code>192.168.1.42</code>. Enter this as <em>Speed Sensor Address</em> in OpenSpeed.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div data-lang="de">
+          <h3 style="font-size:1rem;margin-bottom:16px;color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Anpassen &amp; Flashen</h3>
+          <div class="steps">
+            <div class="step">
+              <div class="step-num">4</div>
+              <div>
+                <h3>WLAN-Zugangsdaten eintragen</h3>
+                <p>Die zwei WLAN-Konstanten am Anfang des Sketches anpassen (Bereich <em>EDIT FIELDS BELOW</em>):</p>
+                <div class="code-block" style="margin-top:8px"><code><span class="kw">const char*</span> WIFI_SSID = <span class="str">"IhrNetzwerkname"</span>;
+<span class="kw">const char*</span> WIFI_PASS = <span class="str">"IhrPasswort"</span>;</code></div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">5</div>
+              <div>
+                <h3>⚠️ Sensorabstand einstellen</h3>
+                <p><strong>Dies ist der wichtigste Konfigurationsschritt.</strong> Den Abstand zwischen den Sensormittelpunkten auf den Millimeter genau messen und setzen:</p>
+                <div class="code-block" style="margin-top:8px"><code><span class="kw">const float</span> SENSOR_DISTANCE_M = <span class="num">0.49f</span>;</code></div>
+                <p style="margin-top:8px">Beispiel: Sind die Sensoren 65 cm auseinander, <code>0.65f</code> eintragen. Ist der Wert falsch, sind <strong>alle Geschwindigkeits- und Längenmessungen systematisch falsch</strong> – ohne Fehlermeldung.</p>
+                <p style="margin-top:6px">GPIO-Pins können hier ebenfalls angepasst werden, falls die Verkabelung abweicht:</p>
+                <div class="code-block" style="margin-top:6px"><code><span class="kw">const int</span> SENSOR1_PIN = <span class="num">6</span>;
+<span class="kw">const int</span> SENSOR2_PIN = <span class="num">7</span>;</code></div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">6</div>
+              <div>
+                <h3>Board auswählen &amp; hochladen</h3>
+                <p>Werkzeuge → Board → <strong>ESP32 Dev Module</strong>. COM-Port auswählen. <strong>Upload ▶</strong> klicken.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">7</div>
+              <div>
+                <h3>IP-Adresse notieren</h3>
+                <p>Serial Monitor auf <strong>115200 Baud</strong> öffnen. Nach "Connected!" wird die IP-Adresse angezeigt, z. B. <code>192.168.1.42</code>. Diese als <em>Speed Sensor Address</em> in OpenSpeed eintragen.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════ SOFTWARE ══════════════════════ -->
+<section id="software">
+  <div class="container">
+
+    <div data-lang="en">
+      <div class="section-tag">Desktop App</div>
+      <h2>Setting Up the Desktop App</h2>
+      <p class="section-lead">OpenSpeed runs on Windows 10/11. No installer needed — unzip and run.</p>
+    </div>
+    <div data-lang="de">
+      <div class="section-tag">Desktop-App</div>
+      <h2>Einrichtung der Desktop-App</h2>
+      <p class="section-lead">OpenSpeed läuft auf Windows 10/11. Kein Installer – entzippen und starten.</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px">
+
+      <div>
+        <div data-lang="en">
+          <h3 style="font-size:1rem;margin-bottom:16px;color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Installation</h3>
+          <div class="steps">
+            <div class="step">
+              <div class="step-num">1</div>
+              <div>
+                <h3>Install the runtime</h3>
+                <p>Download and install the <strong>Windows Desktop Runtime 8.x</strong> from <a href="https://dotnet.microsoft.com/download/dotnet/8.0" target="_blank" rel="noopener">dotnet.microsoft.com</a> if not already installed. This is a free Microsoft component required to run the app.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">2</div>
+              <div>
+                <h3>Download OpenSpeed</h3>
+                <p>Download the latest release from <a href="https://github.com/jaak0b/OpenSpeed" target="_blank" rel="noopener">GitHub Releases</a> and extract the ZIP to any folder.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">3</div>
+              <div>
+                <h3>Run OpenSpeed.UI.exe</h3>
+                <p>Double-click <code>OpenSpeed.UI.exe</code>. Settings are saved automatically to <code>%USERPROFILE%\OpenSpeed\Settings.json</code>.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div data-lang="de">
+          <h3 style="font-size:1rem;margin-bottom:16px;color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Installation</h3>
+          <div class="steps">
+            <div class="step">
+              <div class="step-num">1</div>
+              <div>
+                <h3>Laufzeitumgebung installieren</h3>
+                <p>Die <strong>Windows Desktop Runtime 8.x</strong> von <a href="https://dotnet.microsoft.com/download/dotnet/8.0" target="_blank" rel="noopener">dotnet.microsoft.com</a> herunterladen und installieren, falls noch nicht vorhanden. Dies ist eine kostenlose Microsoft-Komponente, die zum Ausführen der App benötigt wird.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">2</div>
+              <div>
+                <h3>OpenSpeed herunterladen</h3>
+                <p>Aktuelle Version von <a href="https://github.com/jaak0b/OpenSpeed" target="_blank" rel="noopener">GitHub Releases</a> herunterladen und die ZIP-Datei in ein beliebiges Verzeichnis entpacken.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">3</div>
+              <div>
+                <h3>OpenSpeed.UI.exe starten</h3>
+                <p>Doppelklick auf <code>OpenSpeed.UI.exe</code>. Einstellungen werden automatisch unter <code>%USERPROFILE%\OpenSpeed\Settings.json</code> gespeichert.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div data-lang="en">
+          <h3 style="font-size:1rem;margin-bottom:16px;color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:.5px">First-Run Configuration</h3>
+          <div class="steps">
+            <div class="step">
+              <div class="step-num">1</div>
+              <div>
+                <h3>Enter Z21 address</h3>
+                <p>Type the IP address of your Z21 in the <em>Z21 Address</em> field. The status dot turns green when the connection is established.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">2</div>
+              <div>
+                <h3>Enter sensor address</h3>
+                <p>Enter the IP address of the ESP32 from the Serial Monitor output.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">3</div>
+              <div>
+                <h3>Configure the locomotive</h3>
+                <p>Set <em>Decoder Address</em>, <em>DCC Speed Mode</em> (14 / 28 / 128), and <em>Scale</em> (e.g. 87 for H0). CV3 and CV4 on the decoder must be <strong>0</strong>.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">4</div>
+              <div>
+                <h3>Position the loco &amp; start</h3>
+                <p>Place the locomotive <em>before Sensor 1</em> in the forward direction. Click <strong>Start Speed Measurement</strong>. The app drives it through all configured speed steps automatically — no further interaction needed.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div data-lang="de">
+          <h3 style="font-size:1rem;margin-bottom:16px;color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Ersteinrichtung</h3>
+          <div class="steps">
+            <div class="step">
+              <div class="step-num">1</div>
+              <div>
+                <h3>Z21-Adresse eingeben</h3>
+                <p>IP-Adresse der Z21 in das Feld <em>Z21 Address</em> eingeben. Der Status-Punkt wird grün, sobald die Verbindung steht.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">2</div>
+              <div>
+                <h3>Sensor-Adresse eingeben</h3>
+                <p>IP-Adresse des ESP32 aus dem Serial-Monitor-Output eingeben.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">3</div>
+              <div>
+                <h3>Lokomotive konfigurieren</h3>
+                <p><em>Decoder-Adresse</em>, <em>DCC-Fahrstufenmodus</em> (14 / 28 / 128) und <em>Maßstab</em> (z. B. 87 für H0) einstellen. CV3 und CV4 im Decoder müssen <strong>0</strong> sein.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">4</div>
+              <div>
+                <h3>Lok positionieren &amp; starten</h3>
+                <p>Lokomotive <em>vor Sensor 1</em> in Vorwärtsrichtung aufstellen. <strong>Geschwindigkeitsmessung starten</strong> klicken. Die App fährt die Lok automatisch durch alle konfigurierten Fahrstufen – kein weiteres Eingreifen nötig.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="alert alert-warning" style="margin-top:28px">
+      <span class="alert-icon">⚠️</span>
+      <div>
+        <strong>CV3 / CV4 = 0:</strong>
+        <span data-lang-inline="en"> Acceleration and deceleration ramps must be <strong>disabled</strong> before measuring. If either CV is non-zero, the locomotive will not respond instantly to speed commands from the Z21, causing the timing logic to fail and all measurements to be incorrect.</span>
+        <span data-lang-inline="de"> Beschleunigungs- und Bremsrampen müssen vor der Messung <strong>deaktiviert</strong> werden. Sind diese CVs ungleich 0, reagiert die Lokomotive nicht sofort auf Fahrbefehle der Z21, was die Zeitmesslogik zum Scheitern bringt und alle Messungen verfälscht.</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════ API ══════════════════════ -->
+<section id="api">
+  <div class="container">
+
+    <div data-lang="en">
+      <div class="section-tag">Firmware REST API</div>
+      <h2>ESP32 HTTP Endpoints</h2>
+      <p class="section-lead">The firmware serves three endpoints on port 80 via <strong>ESPAsyncWebServer</strong>. All return JSON. You can call them directly in a browser for debugging.</p>
+    </div>
+    <div data-lang="de">
+      <div class="section-tag">Firmware REST-API</div>
+      <h2>ESP32-HTTP-Endpunkte</h2>
+      <p class="section-lead">Die Firmware stellt drei Endpunkte auf Port 80 via <strong>ESPAsyncWebServer</strong> bereit. Alle antworten mit JSON und können zum Debuggen direkt im Browser aufgerufen werden.</p>
+    </div>
+
+    <!-- /result -->
+    <div class="endpoint">
+      <span class="method">GET</span>
+      <span class="endpoint-path">/result</span>
+      <span class="endpoint-desc"><span data-lang-inline="en">Latest measurement result</span><span data-lang-inline="de">Letztes Messergebnis</span></span>
+    </div>
+    <div class="code-block">
+      <code>{
+  <span class="str">"id"</span>: <span class="num">3178432491</span>,
+  <span class="str">"train_length_cm"</span>: <span class="num">31.247</span>,
+  <span class="str">"speed_kmh"</span>: <span class="num">2.940</span>
+}</code>
+    </div>
+    <div data-lang="en"><p style="font-size:.875rem;color:var(--text-secondary);margin-bottom:20px">The desktop app polls this endpoint every 250 ms and detects a new measurement by comparing the <code>id</code> field to the baseline value captured just before the loco was commanded to move. The <code>id</code> is a random 32-bit number (not a counter), so collisions are astronomically unlikely.</p></div>
+    <div data-lang="de"><p style="font-size:.875rem;color:var(--text-secondary);margin-bottom:20px">Die Desktop-App ruft diesen Endpunkt alle 250 ms ab und erkennt eine neue Messung durch Vergleich des <code>id</code>-Felds mit dem Basis-Wert, der kurz vor dem Losfahren der Lok erfasst wurde. Die <code>id</code> ist eine zufällige 32-Bit-Zahl (kein Zähler), Kollisionen sind praktisch ausgeschlossen.</p></div>
+
+    <!-- /reset -->
+    <div class="endpoint">
+      <span class="method">GET</span>
+      <span class="endpoint-path">/reset</span>
+      <span class="endpoint-desc"><span data-lang-inline="en">Reset all state, clear result, set id to 0</span><span data-lang-inline="de">Zustand zurücksetzen, Ergebnis löschen, id auf 0 setzen</span></span>
+    </div>
+    <div class="code-block">
+      <code>{ <span class="str">"status"</span>: <span class="str">"reset"</span> }</code>
+    </div>
+    <div data-lang="en"><p style="font-size:.875rem;color:var(--text-secondary);margin-bottom:20px">Called before every measurement pass. Resets the state machine to <code>WAITING_FOR_MEASUREMENT</code>, clears speed/length/id, and resets timing variables. After a reset the <code>id</code> field in <code>/result</code> is 0.</p></div>
+    <div data-lang="de"><p style="font-size:.875rem;color:var(--text-secondary);margin-bottom:20px">Wird vor jedem Messpurchlauf aufgerufen. Setzt den Zustandsautomaten auf <code>WAITING_FOR_MEASUREMENT</code> zurück, löscht Geschwindigkeit, Länge und id sowie alle Zeitvariablen. Nach einem Reset ist das <code>id</code>-Feld in <code>/result</code> gleich 0.</p></div>
+
+    <!-- /status -->
+    <div class="endpoint">
+      <span class="method">GET</span>
+      <span class="endpoint-path">/status</span>
+      <span class="endpoint-desc"><span data-lang-inline="en">Current sensor state</span><span data-lang-inline="de">Aktueller Sensorzustand</span></span>
+    </div>
+    <div class="code-block">
+      <code>{ <span class="str">"status"</span>: <span class="num">0</span> }</code>
+    </div>
+    <div data-lang="en"><p style="font-size:.875rem;color:var(--text-secondary);margin-bottom:20px">Polled once per second by the <code>ReachabilityMonitor</code> in the desktop app to drive the connection status dot in the header. A successful HTTP response means the sensor is reachable regardless of the status value.</p></div>
+    <div data-lang="de"><p style="font-size:.875rem;color:var(--text-secondary);margin-bottom:20px">Wird vom <code>ReachabilityMonitor</code> der Desktop-App einmal pro Sekunde abgerufen, um die Verbindungsanzeige im Header zu steuern. Eine erfolgreiche HTTP-Antwort bedeutet, der Sensor ist erreichbar – unabhängig vom Statuswert.</p></div>
+
+    <div class="alert alert-success">
+      <span class="alert-icon">✅</span>
+      <div>
+        <strong><span data-lang-inline="en">Quick connectivity test:</span><span data-lang-inline="de">Schneller Verbindungstest:</span></strong>
+        <span data-lang-inline="en"> Open <code>http://&lt;sensor-ip&gt;/status</code> in a browser. If you see <code>{"status":0}</code> the firmware is running and reachable on your network.</span>
+        <span data-lang-inline="de"> Im Browser <code>http://&lt;sensor-ip&gt;/status</code> öffnen. Erscheint <code>{"status":0}</code>, läuft die Firmware und ist im Netzwerk erreichbar.</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════ FOOTER ══════════════════════ -->
+<footer>
+  <p>
+    <strong style="color:#A0AEC0">OpenSpeed</strong>
+    &nbsp;·&nbsp;
+    <span data-lang-inline="en">Open-source model train measurement system</span>
+    <span data-lang-inline="de">Open-Source Messsystem für Modellbahnen</span>
+    &nbsp;·&nbsp;
+    <a href="https://github.com/jaak0b/OpenSpeed" target="_blank" rel="noopener">GitHub</a>
+    &nbsp;·&nbsp;
+    <span data-lang-inline="en">Roco/Fleischmann Z21 · Windows</span>
+    <span data-lang-inline="de">Roco/Fleischmann Z21 · Windows</span>
+  </p>
+</footer>
+
+<script src="assets/script.js"></script>
+</body>
+</html>

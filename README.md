@@ -1,21 +1,36 @@
 # OpenSpeed
-OpenSpeed is an open source model train speed measuring system using cheap of the shelf hardware.
 
-<img width="909" height="520" alt="image" src="https://github.com/user-attachments/assets/8b870938-3319-46e3-8379-e18b4ce6f565" />
+**Precision speed and length measurement for model trains.**
 
-# BOM
-* 2 x  [IR Infrared Module](https://www.amazon.de/AZDelivery-Infrared-Detection-Compatible-Raspberry/dp/B07D924JHT/)
-* 1 x [Seeed Studio XIAO ESP32C3](https://www.amazon.de/-/en/Seeed-Studio-XIAO-ESP32C3-Microcontroller/dp/B0B94JZ2YF/) (or any other wlan capable esp32)
+OpenSpeed measures the scale speed of every DCC speed step and the physical length of any consist — fully automated, no modifications to the locomotive required.
 
-# Arduino Sketch
-Download the Arduino sketch for the ESP32C3 from [here](https://github.com/jaak0b/OpenSpeed/blob/main/Arduino%20Sketch/OpenSpeed/OpenSpeed.ino).  
-Install the following libraries:
+> ⚠️ **Requires a Roco / Fleischmann Z21 command station.** No other DCC system is supported.
 
-* https://github.com/ESP32Async/AsyncTCP
-* https://github.com/ESP32Async/ESPAsyncWebServer
+---
 
-In the sketch you need to fill in the following values.
-* WIFI_SSID: Wifi SSID
-* WIFI_PASS: Wifi password
-* SENSOR1_PIN / SENSOR2_PIN: Ir sensors pins. (by default they are D4 and D5 on the ESP32C3)
-* Sensor_Distance_M: Distance between the two ir sensor in meters. 
+## How it works
+
+Two IR sensors are mounted above a straight section of track at a fixed distance. As a train passes, the ESP32 firmware measures the transit time between the sensors (speed) and how long the second sensor stays blocked (length). The desktop app drives the locomotive through each speed step via the Z21, collects the results, and plots them live.
+
+## What you need
+
+- Roco / Fleischmann Z21 (LAN)
+- ESP32 DevKit + 2× TCRT5000 IR sensors
+- Windows 10/11 PC on the same network
+
+## Features
+
+- Automatic sweep of all DCC speed steps — forward and backward pass each
+- Train length measurement (averaged over two passes)
+- Live speed chart with Excel export
+- Dark and light mode, English and German UI
+
+## Documentation & wiring guide
+
+👉 **[openspeed.jaak0b.github.io/OpenSpeed](https://jaak0b.github.io/OpenSpeed)**
+
+Full wiring diagrams, firmware setup, sensor distance configuration, and first-run instructions are on the documentation site.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
