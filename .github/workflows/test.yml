@@ -1,0 +1,33 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.x
+
+      - name: Restore
+        run: dotnet restore "OpenSpeed Desktop/OpenSpeed.sln"
+
+      - name: Build
+        run: dotnet build "OpenSpeed Desktop/OpenSpeed.sln" --no-restore --configuration Release
+
+      - name: Test – Core
+        run: dotnet test "OpenSpeed Desktop/OpenSpeed.Core.UnitTests/OpenSpeed.Core.UnitTests.csproj" --no-build --configuration Release --logger "github"
+
+      - name: Test – Adapter
+        run: dotnet test "OpenSpeed Desktop/OpenSpeed.Adapter.UnitTests/OpenSpeed.Adapter.UnitTests.csproj" --no-build --configuration Release --logger "github"
+
+      - name: Test – UI
+        run: dotnet test "OpenSpeed Desktop/OpenSpeed.UI.UnitTests/OpenSpeed.UI.UnitTests.csproj" --no-build --configuration Release --logger "github"
