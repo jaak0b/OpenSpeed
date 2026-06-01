@@ -4,7 +4,7 @@
 
 OpenSpeed measures the scale speed of every DCC speed step and the physical length of any consist — fully automated, no modifications to the locomotive required.
 
-> ⚠️ **Requires a Roco / Fleischmann Z21 command station.** No other DCC system is supported.
+> **Requires a Roco / Fleischmann Z21 command station.** No other DCC system is supported.
 
 ---
 
@@ -27,7 +27,7 @@ Two IR sensors are mounted above a straight section of track at a fixed distance
 
 ## Documentation & wiring guide
 
-👉 **[openspeed.jaak0b.github.io/OpenSpeed](https://jaak0b.github.io/OpenSpeed)**
+**[openspeed.jaak0b.github.io/OpenSpeed](https://jaak0b.github.io/OpenSpeed)**
 
 Full wiring diagrams, firmware setup, sensor distance configuration, and first-run instructions are on the documentation site.
 
