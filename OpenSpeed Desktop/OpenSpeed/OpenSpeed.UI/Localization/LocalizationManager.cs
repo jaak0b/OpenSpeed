@@ -48,7 +48,8 @@ namespace OpenSpeed.UI.Localization
       ["MsgNoData"] = "No measurements to export.",
       ["TtMinimize"] = "Minimize",
       ["TtMaximize"] = "Maximize",
-      ["TtClose"] = "Close"
+      ["TtClose"] = "Close",
+      ["TtTheme"] = "Toggle dark mode"
     };
 
     private static readonly Dictionary<string, string> German = new()
@@ -89,7 +90,8 @@ namespace OpenSpeed.UI.Localization
       ["MsgNoData"] = "Keine Messdaten zum Exportieren.",
       ["TtMinimize"] = "Minimieren",
       ["TtMaximize"] = "Maximieren",
-      ["TtClose"] = "Schließen"
+      ["TtClose"] = "Schließen",
+      ["TtTheme"] = "Dunkelmodus umschalten"
     };
 
     public Language Current => _current;

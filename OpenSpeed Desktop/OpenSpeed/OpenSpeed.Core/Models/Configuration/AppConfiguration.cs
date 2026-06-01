@@ -16,6 +16,16 @@ namespace OpenSpeed.Core.Models.Configuration
       }
     }
 
+    public Theme Theme
+    {
+      get => valueStore.GetValue(nameof(Theme), Theme.Light);
+      set
+      {
+        valueStore.SetValue(nameof(Theme), value);
+        OnPropertyChanged();
+      }
+    }
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)

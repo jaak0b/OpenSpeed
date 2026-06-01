@@ -1,0 +1,91 @@
+<UserControl x:Class="OpenSpeed.UI.Controls.IpAddressInput"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Name="Root">
+
+    <UserControl.Resources>
+        <Style x:Key="OctetBox" TargetType="TextBox">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+            <Setter Property="CaretBrush" Value="{DynamicResource TextPrimaryBrush}" />
+            <Setter Property="SelectionBrush" Value="{DynamicResource SelectionBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="MaxLength" Value="3" />
+            <Setter Property="Width" Value="32" />
+            <Setter Property="Padding" Value="0,3" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <ScrollViewer x:Name="PART_ContentHost"
+                                      Background="Transparent"
+                                      Foreground="{TemplateBinding Foreground}"
+                                      VerticalAlignment="Center" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Foreground" Value="{DynamicResource DisabledBrush}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Border Background="{DynamicResource SidebarBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
+            BorderThickness="1"
+            CornerRadius="3">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="30" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" Orientation="Horizontal"
+                        VerticalAlignment="Center" Margin="6,0,4,0">
+                <TextBox x:Name="OctetOne" Style="{StaticResource OctetBox}"
+                         TextChanged="Octet_TextChanged"
+                         PreviewTextInput="Octet_PreviewTextInput"
+                         PreviewKeyDown="Octet_PreviewKeyDown" />
+                <TextBlock Text="." Foreground="{DynamicResource TextSecondaryBrush}"
+                           VerticalAlignment="Center" Margin="1,0" FontSize="13" />
+                <TextBox x:Name="OctetTwo" Style="{StaticResource OctetBox}"
+                         TextChanged="Octet_TextChanged"
+                         PreviewTextInput="Octet_PreviewTextInput"
+                         PreviewKeyDown="Octet_PreviewKeyDown" />
+                <TextBlock Text="." Foreground="{DynamicResource TextSecondaryBrush}"
+                           VerticalAlignment="Center" Margin="1,0" FontSize="13" />
+                <TextBox x:Name="OctetThree" Style="{StaticResource OctetBox}"
+                         TextChanged="Octet_TextChanged"
+                         PreviewTextInput="Octet_PreviewTextInput"
+                         PreviewKeyDown="Octet_PreviewKeyDown" />
+                <TextBlock Text="." Foreground="{DynamicResource TextSecondaryBrush}"
+                           VerticalAlignment="Center" Margin="1,0" FontSize="13" />
+                <TextBox x:Name="OctetFour" Style="{StaticResource OctetBox}"
+                         TextChanged="Octet_TextChanged"
+                         PreviewTextInput="Octet_PreviewTextInput"
+                         PreviewKeyDown="Octet_PreviewKeyDown" />
+            </StackPanel>
+
+            <Border Grid.Column="1"
+                    BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="1,0,0,0">
+                <Ellipse Width="10" Height="10"
+                         HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Ellipse.Style>
+                        <Style TargetType="Ellipse">
+                            <Setter Property="Fill" Value="{DynamicResource DisabledBrush}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsConnected, ElementName=Root}" Value="True">
+                                    <Setter Property="Fill" Value="{DynamicResource GreenBrush}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Ellipse.Style>
+                </Ellipse>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

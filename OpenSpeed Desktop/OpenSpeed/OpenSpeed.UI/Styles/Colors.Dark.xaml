@@ -1,0 +1,21 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <SolidColorBrush x:Key="BackgroundBrush" Color="#1A202C" />
+    <SolidColorBrush x:Key="SidebarBrush" Color="#2D3748" />
+    <SolidColorBrush x:Key="HeaderBrush" Color="#171923" />
+    <SolidColorBrush x:Key="PrimaryBrush" Color="#63B3ED" />
+    <SolidColorBrush x:Key="GreenBrush" Color="#48BB78" />
+    <SolidColorBrush x:Key="DangerBrush" Color="#FC8181" />
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="#F7FAFC" />
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="#A0AEC0" />
+    <SolidColorBrush x:Key="BorderBrush" Color="#4A5568" />
+    <SolidColorBrush x:Key="DisabledBrush" Color="#4A5568" />
+    <SolidColorBrush x:Key="AlternateRowBrush" Color="#252D3A" />
+    <SolidColorBrush x:Key="SelectionBrush" Color="#2C5282" />
+    <SolidColorBrush x:Key="TabStripBrush" Color="#1A202C" />
+    <SolidColorBrush x:Key="SuccessBgBrush" Color="#22432F" />
+    <SolidColorBrush x:Key="SuccessBorderBrush" Color="#2F855A" />
+    <SolidColorBrush x:Key="SuccessTextBrush" Color="#9AE6B4" />
+
+</ResourceDictionary>

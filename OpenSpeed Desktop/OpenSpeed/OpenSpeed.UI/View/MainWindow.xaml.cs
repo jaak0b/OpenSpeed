@@ -3,9 +3,6 @@ using OpenSpeed.UI.ViewModel;
 
 namespace OpenSpeed.UI.View;
 
-/// <summary>
-/// Interaction logic for MainWindow.xaml
-/// </summary>
 public partial class MainWindow : Window
 {
   public MainWindowViewModel MainWindowViewModel { get; }
@@ -15,6 +12,7 @@ public partial class MainWindow : Window
     MainWindowViewModel = mainWindowViewModel;
     DataContext = MainWindowViewModel;
     InitializeComponent();
+    Plot.Controller = new OxyPlot.PlotController();
   }
 
   private async void ButtonStartMeasurement_OnClick(object sender, RoutedEventArgs e) => await MainWindowViewModel.StartMeasurement();
@@ -26,6 +24,8 @@ public partial class MainWindow : Window
   private async void ButtonCancelLengthMeasurement_OnClick(object sender, RoutedEventArgs e) => await MainWindowViewModel.CancelLengthMeasurement();
 
   private void ButtonExport_OnClick(object sender, RoutedEventArgs e) => MainWindowViewModel.ExportResults();
+
+  private void ThemeToggle_OnClick(object sender, RoutedEventArgs e) => MainWindowViewModel.ToggleTheme();
 
   private void Minimize_OnClick(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
 

@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -10,6 +10,7 @@ using OpenSpeed.Core.Interfaces;
 using OpenSpeed.Core.Models;
 using OpenSpeed.Core.Models.Configuration;
 using OpenSpeed.UI.Localization;
+using OpenSpeed.UI.Theming;
 
 namespace OpenSpeed.UI.ViewModel
 {
@@ -20,6 +21,7 @@ namespace OpenSpeed.UI.ViewModel
     private readonly IZ21Controller _z21Controller;
     private readonly AppConfiguration _appConfiguration;
     private readonly LocalizationManager _localization;
+    private readonly ThemeManager _themeManager;
     private ReachabilityMonitor _z21ReachabilityMonitor;
     private ReachabilityMonitor _speedSensorReachabilityMonitor;
     private bool _speedSensorConnected;
@@ -52,12 +54,25 @@ namespace OpenSpeed.UI.ViewModel
       }
     }
 
+    public bool IsDarkMode => _appConfiguration.Theme == Theme.Dark;
+
+    public string ThemeGlyph => ((char)(IsDarkMode ? 0xE706 : 0xE708)).ToString();
+
+    public void ToggleTheme()
+    {
+      var next = IsDarkMode ? Theme.Light : Theme.Dark;
+      _appConfiguration.Theme = next;
+      _themeManager.ApplyTheme(next);
+      OnPropertyChanged(nameof(IsDarkMode));
+      OnPropertyChanged(nameof(ThemeGlyph));
+    }
+
     public ObservableCollection<SpeedStepMeasurement> Steps { get; } = [];
 
     public MainWindowViewModel(IMeasurementController measurementController, SpeedPlotViewModel plotViewModel, MeasurementConfiguration measurementConfiguration, EndPointConfiguration endPointConfiguration,
                                LocomotiveConfiguration locomotiveConfiguration, IZ21Controller z21Controller,
                                ILengthMeasurementController lengthMeasurementController, LengthMeasurementConfiguration lengthMeasurementConfiguration,
-                               AppConfiguration appConfiguration, LocalizationManager localization)
+                               AppConfiguration appConfiguration, LocalizationManager localization, ThemeManager themeManager)
     {
       PlotViewModel = plotViewModel;
       MeasurementConfiguration = measurementConfiguration;
@@ -70,6 +85,7 @@ namespace OpenSpeed.UI.ViewModel
       _z21Controller = z21Controller;
       _appConfiguration = appConfiguration;
       _localization = localization;
+      _themeManager = themeManager;
       _measurementController.OnSpeedStepMeasured += (_, args) => Application.Current.Dispatcher.BeginInvoke(() => Steps.Add(args.Measurement));
       _z21ReachabilityMonitor = new(() => EndPointConfiguration.Z21IpAddress, b => Z21Connected = b);
       _speedSensorReachabilityMonitor = new(() => EndPointConfiguration.SpeedSensorIpAddress, b => SpeedSensorConnected = b);
