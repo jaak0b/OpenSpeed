@@ -17,6 +17,7 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance viewModel:MainWindowViewModel}"
         Title="OpenSpeed" Height="660" Width="1050" MinHeight="550" MinWidth="900"
+        Icon="/app.ico"
         WindowStyle="None" ResizeMode="CanResize">
 
     <shell:WindowChrome.WindowChrome>
